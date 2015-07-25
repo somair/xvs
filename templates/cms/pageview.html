@@ -1,0 +1,11 @@
+{% extends 'cms/base.html' %}
+
+{% block title %}CMS Page{% endblock %}
+
+
+{% block content %}
+{% if pageview %}
+	<h2>{{ pageview.page_name }}</h2>
+	{{ pageview.page_content|safe }}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'cms/base.html' %}
+{% if pageview %}
+{% block title %}{{ pageview.page_name }}{% endblock %}
+{% endif %}
+
+{% block content %}
+<p style="color: red; margin-bottom: 2px;"><strong>This is a preview page. All pages, even draft pages, will show here.</strong></p>
+<hr style="height: 1px; color: black; background-color: #000000; border: 0; margin-bottom: 20px;"/>
+
+<div style="float: left; width: 18%; padding-right: 2%;">
+	<h2 style="margin-bottom:0px;">Pages</h2>
+	<hr style="height: 1px; color: black; background-color: #000000; border: 0; margin-bottom: 10px;"/>
+	{% if pages %}
+		{% for page in pages %}
+		<h6 style="margin-bottom:2px;"><a href=/cms/pages/{{ page.id|urlencode }}>{{ page.page_name }}</a></h6>
+		{% endfor %}
+	{% endif %}
+		<br /><br />
+</div>
+<div style="float: right; width: 78%; padding-left:2%;">
+	{% if pageview %}
+		<h2 style="margin-bottom:0px;">{{ pageview.page_name }}</h2>
+		<hr style="height: 1px; color: black; background-color: #000000; border: 0; margin-bottom: 10px;" />
+		{{ pageview.page_content|safe }}
+	{% endif %}
+	<br />
+</div>
+{% endblock %}

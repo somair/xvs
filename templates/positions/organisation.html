@@ -1,0 +1,204 @@
+{% extends 'positions/organisations.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'positions.views.organisation' organisation.id %}">{{ organisation.name }}</a>
+{% endblock %}
+
+{% block content %}
+
+  <a class="rbutton icon printer" href="?print">Printable version</a>
+
+  <h1>
+    {{ organisation }} 
+    {% if user.is_staff %}
+      <a class="editlink" href="{% url 'admin:positions_organisation_change' organisation.id %}">Edit in Admin</a>
+    {% endif %}
+  </h1>
+
+  {% if features.organisation_header %}
+
+    <div class="organisation_info">
+
+      <img src="{% url 'positions.views.organisation_primary_image' organisation.id %}" class="organisation_primary_image"/>
+
+      <div class="organisation_description">
+
+        {% if organisation.description %}
+          {{ organisation.clean_description|safe }}
+        {% else %}
+          <i style="color: #888888">A description for this organisation has not been submitted yet.</i>
+        {% endif %}
+
+      </div>
+      
+      <br class="clear"/>
+
+    </div>
+
+  {% endif %}
+
+  <div style="float: left; width: 300px; padding-right: 20px;"> 
+
+    <h3>Opportunities</h3>
+
+    <h5>Current</h5>
+    <ul>
+      {% for position in organisation.current_positions %}
+        <li><a href="{% url 'positions.views.position' position.id %}" class="entity position">{{ position.name }}</a>
+        </li>
+      {% empty %}
+        <li>This organisation is not currently advertising any opportunities.</li>
+      {% endfor %}
+    </ul>
+
+    {% if organisation.old_positions %}
+      <h5>Past</h5>
+      <ul>
+        {% for position in organisation.old_positions %}
+          <li><a href="{% url 'positions.views.position' position.id %}" class="entity position">{{ position.name }}</a></li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% ifequal user.get_profile.representativeprofile.organisation organisation %}
+      <h5>Unapproved</h5>
+      <ul>
+        {% for position in organisation.unapproved_positions %}
+          <li><a href="{% url 'positions.views.position' position.id %}" class="entity position">{{ position.name }}</a></li>
+        {% empty %}
+          <li>There are no positions awaiting approval right now.</li>
+        {% endfor %}
+      </ul>
+    {% endifequal %}
+
+  </div>
+  
+  <div style="float: right; width: 640px">
+    <h3>Organisation Profile</h3>
+    <table class="data cols mini"> 
+      <tr><th>Purpose</th> 
+        <td> 
+          {{ organisation.purpose|linebreaksbr }}
+        </td> 
+      </tr> 
+      <tr><th>Address</th> 
+        <td>
+          {{ organisation.location|linebreaksbr|default:"The organisation has not supplied this information." }} 
+        </td> 
+      </tr> 
+      {% if features.org_phone_numbers %}
+        <tr><th>Phone</th> 
+          <td>
+            {{ organisation.phone_number|default:"The organisation has not supplied this information." }} 
+          </td> 
+        </tr> 
+      {% endif %}
+      <tr><th>Website</th> 
+        <td>
+          {% if organisation.website %}
+            <a href="{{ organisation.website }}" class="entity website" target="_blank">{{ organisation.website }}</a> 
+          {% else %}
+            The organisation has not supplied this information.
+          {% endif %}
+
+
+        </td> 
+      </tr> 
+      {% if organisation.charity_number %}
+        <tr><th>Charity No.</th> 
+          <td>
+            {{ organisation.charity_number }} 
+          </td> 
+        </tr>
+      {% endif %}
+
+      {% if features.departments and user.is_staff %}
+
+        <tr><th>Department</th>
+          <td>
+            {% if organisation.department %}{{ organisation.department }}{% else %}This organisation is not attached to a department.{% endif %}
+          </td>
+        </tr>
+
+      {% endif %}
+    </table>
+
+    {% if user.is_staff or user.get_profile.representativeprofile.organisation == organisation %}
+      <h3>Organisation Performance</h3>
+
+      <table class="data big" style="width: 50%; float: left;">
+        <tr>
+          <td class='value title'>{{ organisation.applications_received.count }}</td>
+          <td>applications received</td>
+        </tr>
+        <tr>
+          <td class='value title'>{{ organisation.applications_accepted.count }}</td>
+          <td>accepted</td>
+        </tr>
+        <tr>
+          <td class='value title'>{{ organisation.applications_rejected.count }}</td>
+          <td>rejected</td>
+        </tr>
+        <tr>
+          <td class='value title'>{{ organisation.applications_withdrawn.count }}</td>
+          <td>withdrawn</td>
+        </tr>
+        <tr class="{% if organisation.applications_in_progress.count %}pending{% endif %}">
+          <td class='value title'>{{ organisation.applications_in_progress.count }}</td>
+          <td class='title'>pending</td>
+        </tr>
+      </table>
+      <table class="data big">
+        <tr>
+          <td class='value title'>{{ organisation.hour_records_logged.count }}</td>
+          <td>hour records logged</td>
+        </tr>
+        <tr>
+          <td class='value title'>{{ organisation.hour_records_validated.count }}</td>
+          <td>validated</td>
+        </tr>
+        <tr class="{% if organisation.hour_records_not_validated.count %}pending{% endif %}">
+          <td class='value title'>{{ organisation.hour_records_not_validated.count }}</td>
+          <td class='title'>pending 
+            {% if organisation.hour_records_not_validated.count %}
+              <a href="{% url 'hours.views.review' organisation.id %}">(view)</a>
+            {% endif %}
+          </td>
+        </tr>
+
+      </table>
+
+      <br class="clear"/>
+
+    {% endif %}
+
+    {% if user.is_staff %}
+      <h3>Admin Staff Information</h3>
+      <table class="data cols mini">
+        <tr>
+          <th>Volunteers</th>
+          <td><a href="{% url 'hours.views.organisation_volunteers' organisation.id %}">View this organisation's volunteers</a></td>
+        </tr>
+        <tr>
+          <th>Representatives</th>
+          <td>
+              {% for rp in organisation.representativeprofile_set.all %}
+                <a href="{% url 'profiles.views.profile' rp.profile.user.id %}" class="entity representative">{{ rp }}</a><br/>
+                <b>Username</b>: <tt>{{ rp.profile.user.username }}</tt><br/>
+                <b>Email</b>: <a href="mailto:{{ rp.profile.user.email }}" class="entity email">{{ rp.profile.user.email }}</a><br/>
+                <br/>
+              {% empty %}
+                No representative is currently assigned to the organisation.
+              {% endfor %}  
+            </ul>
+          </td>
+        </tr>
+      </table>
+    {% endif %} 
+  </div>
+  
+{% endblock %}

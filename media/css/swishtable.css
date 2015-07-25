@@ -1,0 +1,99 @@
+table.swish {
+  border: 1px solid #aaaaaa;
+  margin: 20px 7px 20px 0;
+  padding: 0;
+  border-spacing: 0;
+  border-radius: 8px;
+}
+table.swish td {
+  margin: 0;
+  width: 291px;
+  padding: 10px 10px;
+  background-color: #eeeeee;
+  background: -webkit-gradient(linear, left bottom, left top, color-stop(0, #eeeeee), color-stop(1, #ffffff));
+  background: -moz-linear-gradient(center bottom, #eeeeee 0%, #ffffff 100%);
+  border-right: 1px solid #aaaaaa;
+  border-bottom: 1px solid #aaaaaa;
+  vertical-align: top;
+}
+table.swish td:last-child { border-right-width: 0px; }
+table.swish tr:last-child td { border-bottom-width: 0px; }
+table.swish tr:last-child th { border-bottom-width: 0px; }
+table.swish tr:last-child td:first-child { border-bottom-left-radius: 8px; }
+table.swish tr:last-child td:last-child { border-bottom-right-radius: 8px; }
+table.swish td.good {
+  background-position: 287px 12px;
+  background-repeat: no-repeat;
+}
+table.swish td.bad {
+  background-position: 287px 12px;
+  background-repeat: no-repeat;
+}
+table.swish td.good { background-image: url(../img/icons/accept.png); }
+table.swish td.bad { background-image: url(../img/icons/exclamation.png); }
+table.swish tr {
+  margin: 0;
+  padding: 0;
+}
+table.swish th {
+  margin: 0;
+  background-color: #cccccc;
+  background: -webkit-gradient(linear, left bottom, left top, color-stop(0, #cccccc), color-stop(1, #eeeeee));
+  background: -moz-linear-gradient(center bottom, #cccccc 0%, #eeeeee 100%);
+  text-align: left;
+  padding: 3px 10px;
+  border-bottom: 1px solid #aaaaaa;
+}
+table.swish th h1 { margin-bottom: 0px; }
+table.swish th h2 { margin-bottom: 0px; }
+table.swish th h3 { margin-bottom: 0px; }
+table.swish th h4 { margin-bottom: 0px; }
+table.swish th h5 { margin-bottom: 0px; }
+table.swish th h6 { margin-bottom: 0px; }
+table.swish td.section {
+  margin: 0;
+  background-color: #cccccc;
+  background: -webkit-gradient(linear, left bottom, left top, color-stop(0, #cccccc), color-stop(1, #eeeeee));
+  background: -moz-linear-gradient(center bottom, #cccccc 0%, #eeeeee 100%);
+  text-align: left;
+  padding: 3px 10px;
+  border-bottom: 1px solid #aaaaaa;
+}
+table.swish td.section h1 { margin-bottom: 0px; }
+table.swish td.section h2 { margin-bottom: 0px; }
+table.swish td.section h3 { margin-bottom: 0px; }
+table.swish td.section h4 { margin-bottom: 0px; }
+table.swish td.section h5 { margin-bottom: 0px; }
+table.swish td.section h6 { margin-bottom: 0px; }
+table.swish tr:first-child th { border-radius: 8px 8px 0 0; }
+table.swish td.section { border-radius: 8px 8px 0 0; }
+table.swish td.section {
+  font-size: 0.8em;
+  font-weight: bold;
+}
+table.swish a {
+  text-decoration: none;
+  display: block;
+}
+table.swish td.button {
+  width: 311px;
+  padding: 0px;
+}
+table.swish td.button a {
+  padding: 10px 20px;
+  color: blue;
+}
+table.swish td.button .icon {
+  background-repeat: no-repeat;
+  background-position: 12px 12px;
+  padding-left: 34px;
+}
+table.swish td.button a:hover { background-color: #cccccc; }
+table.swish.right {
+  float: right;
+  margin-left: 100px;
+}
+table.swish.left {
+  float: left;
+  margin-right: 80px;
+}

@@ -1,0 +1,64 @@
+{% extends 'layout/master.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'profiles.views.marketing' %}">Marketing Report</a>
+{% endblock %}
+
+{% block extracss %}
+  <link rel="stylesheet" href="//cdn.datatables.net/1.10.0/css/jquery.dataTables.css" type="text/css"/>
+{% endblock %}
+
+{% block extrajavascript %}
+  <script type="text/javascript" src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
+   <script type="text/javascript" charset="utf-8">
+    $(function(){
+      var volunteer_table = $('#volunteer_table').DataTable({
+          "stateSave": true,
+          "pageLength": 100
+        });
+    })
+   </script>
+{% endblock %}
+
+{% block content %}
+
+  <h2><a href="?{{ request.META.QUERY_STRING }}&amp;export=xls" class="rbutton icon excel">Export as XLS</a>
+    <div class="filter">
+      <label>Showing...</label>
+      <a href="{% url 'marketing-report-all' %}" {% if filter == 'all' %}class='selected'{% endif %}>all volunteers</a>
+    </div>
+    Marketing Report
+  </h2>
+
+  <table id="volunteer_table" class="display">
+    <thead>
+      <tr>
+        <th>Registered</th>
+        <th>Volunteer</th>
+        <th>How did you hear about...?</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for volunteer in volunteers %}
+        <tr>
+          <td class="nowrap">{{ volunteer.date_joined|date:"j M Y" }}</td>
+          <td class="nowrap"><a href="{% url 'profiles.views.profile' volunteer.id %}" class="entity volunteer">{{ volunteer.get_full_name }}</a></td>
+          <td>
+            {% with volunteer.baseprofile.volunteerprofile.referrer as how_did_you_hear %}
+              {% if how_did_you_hear %}
+                {{ how_did_you_hear }}
+              {% else %}
+                <span class="hint">(no answer)</span>
+              {% endif %}
+            {% endwith %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+    
+{% endblock %}

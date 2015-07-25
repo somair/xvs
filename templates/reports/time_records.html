@@ -1,0 +1,43 @@
+{% extends 'layout/master.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'reports.views.time_records' %}">Time Records</a>
+{% endblock %}
+
+{% block content %}
+
+  <h2>Time records for work done between {{ start }} and {{ end }}</h2>
+
+  <div class="activityreport">
+    
+    <div class="section">
+      <div class="summary">
+        <h3>Total Records</h3>
+        <div class='big'><span>{{ time_records|length }}</span> records</div>
+        <h3>Volunteers</h3>
+        <div class='big'><span>{{ volunteerinfos|length }}</span> active volunteers</div>
+        <h3>Hours Volunteered</h3>
+        <div class='big' style="margin-bottom: 0px;"><span>{{ totalhours }}</span> hours</div>
+        <div class='big' style="margin-top: -20px;"><span>{{ totalminutes }}</span> minutes</div>
+      </div>
+      <table>
+        <tr><th>Volunteer</th><th>Hours</th><th>Records</th></tr>
+        {% for volunteerinfo in volunteerinfos %}
+          <tr>
+            <td>{{ volunteerinfo.name }}</td>
+            <td>{{ volunteerinfo.hours }} hours{% if volunteerinfo.minutes %} {{ volunteerinfo.minutes }} minutes{% endif %}</td>
+            <td>{{ volunteerinfo.records }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+      <br class="clear"/>
+    </div>
+      
+  </div>
+  
+
+{% endblock %}

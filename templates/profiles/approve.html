@@ -1,0 +1,91 @@
+{% extends 'layout/master.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'profiles.views.approve' v_user.id %}">Approve Representative</a>
+{% endblock %}
+
+{% block content %}
+
+  <div style="width: 50%; float: left;">
+    <h2>Approve Representative<br/><a class="editlink" href="{% url 'admin:auth_user_change' v_user.id %}">Edit user in Admin</a></h2>
+  
+    <p>
+      Representative name: <b>{{ v_user.get_full_name }}</b><br/>
+      Email: <a href="mailto:{{ v_user.email }}">{{ v_user.email }}</a><br/>
+      Organisation named in application: <b>{{ v_user.registrationprofile_set.get.organisation }}</b><br/>
+      {% if v_user.get_profile.department %}
+        Department: <b>{{ v_user.get_profile.department }}</b><br/>
+      {% endif %}
+
+    </p>
+  </div>
+
+  <div style="width: 50%; float: left;">
+    {% if features.service_level_agreements %}
+      <h2>Organisation Checklist<br/><a class="editlink" href="{% url 'admin:profiles_baseprofile_change' v_user.get_profile.id %}">Edit SLA in Admin</a></h2>
+
+
+
+      <table>
+        {% with v_user.get_profile.slas.all as yes_slas %}
+          {% for sla in slas %}
+            <tr>
+              <td style="width: 20px;">
+                {% if sla in yes_slas %}
+                  <img style="position: relative; top: 4px;" src="{{ MEDIA_URL }}img/icons/tick.png"/>
+                {% else %}
+                  <img style="position: relative; top: 4px;" src="{{ MEDIA_URL }}img/icons/cross.png"/>
+                {% endif %}
+              </td>
+              <td style="padding-bottom: 5px">
+                {% if sla in yes_slas and not sla.preferred_answer %}
+                  <b style="color: red;">{{ sla }}</b>
+                {% else %}
+                  {% if sla not in yes_slas and sla.preferred_answer %}
+                    <b style="color: red;">{{ sla }}</b>
+                  {% else %}
+                    {{ sla }}
+                  {% endif %}
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        {% endwith %}
+      </table>
+
+    {% endif %}
+  </div>
+
+
+  <br class="clear"/>
+
+  <div style="width: 50%; float: left;">
+    <h3>Add representative to existing organisation</h3>
+    <form method="post">
+      {% csrf_token %}
+      <select name="organisation_id">
+        {% for organisation in organisations %}
+          <option value="{{ organisation.id }}">{{ organisation.name }}</option>
+        {% endfor %}
+      </select><br/>
+      <input type="submit" value="Approve and add to existing organisation"/></td></tr>
+    </form>
+  </div>
+
+  <div style="width: 50%; float: left;">
+    <h3>OR create a new organisation</h3>
+    <form method="post">
+      {% csrf_token %}
+      <input name="organisation_name" value="{{ v_user.registrationprofile_set.get.organisation }}"/><br/>
+      <input type="submit" value="Approve and create new organisation"/></td></tr>
+    </form>
+  </div>
+    
+  <br style="clear: both;"/><br/>
+ 
+  
+{% endblock %}

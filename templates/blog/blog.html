@@ -1,0 +1,71 @@
+{% extends 'blog/base.html' %}
+
+{% load url from future %}
+
+
+{% block extracss %}
+
+{% endblock extracss %}
+
+{% block title %}{{ Blog }}{% endblock %}
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'blogs.views.blogview' blogger.id %}">Blog</a>
+{% endblock %}
+
+
+{% block content %}
+	<h1 style="margin-bottom: 5px;">{{ FRIENDLY_NAME }} {% if blogger.is_staff %}Blog{% else %}Blogs{% endif %}</h1>
+	<hr style="color: #888888; border: 1px solid #888888; margin-top: 1px; margin-bottom: 20px;"/>
+
+	<div style="width:22%; float: left; padding-bottom: 20px;">
+		<h3 style="margin-bottom: 1px; paddin-bottom: 1px;">{{ blogger.get_full_name }}</h3>
+
+		{% if blogger.is_staff %}
+
+			<div>
+			Site administrator
+			</div>
+
+		{% endif %}
+
+		{% if blogger.get_profile.is_volunteer %}
+			<div>
+				{% if features.volunteer_photos %}
+					<img src="{% url 'profiles.views.volunteer_photo_thumb' blogger.id %}"/><br/>			
+				{% endif %}
+
+				{{ blogger.get_profile.volunteerprofile.get_postgrad_display|capfirst }}
+				{{ blogger.get_profile.volunteerprofile.get_international_display }}<br/>
+				{{ blogger.get_profile.volunteerprofile.course }}<br/>
+
+
+			</div>
+		{% endif %}
+
+		{% if blogger.get_profile.is_representative %}
+			<div>
+				{{ blogger.get_profile.representativeprofile.organisation.name }}<br/>
+				{{ blogger.get_profile.representativeprofile.job_title }}
+			</div>
+		{% endif %}
+
+	</div>
+
+	
+	{% if entries %}
+		{% for ent in entries %}
+		<div style="width: 72%; float:right;">
+			<h3 style="margin-bottom: 1px; paddin-bottom: 1px;"> {{ ent.title }} </h1>
+			<p style="font-size: 9px; color: #888888; padding-left: 3px; margin-bottom: 1px;">Posted by {{ ent.publisher.get_full_name }} on {{ ent.published }}</p>
+			<hr style="color: #888888; border: 1px solid #888888; margin-top: 1px; margin-bottom: 5px;"/>
+			<p>{{ ent.clean_body|safe }}</p>
+		</div>
+		{% endfor %}
+	{% else %}
+	<div style="width: 72%; float:right; margin-bottom: 30px;">
+		<h3 style="margin-bottom: 1px; paddin-bottom: 1px;"> This user has not published any blog entries. </h3>
+	</div>
+	{% endif %}
+
+{% endblock %}

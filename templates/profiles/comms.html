@@ -1,0 +1,47 @@
+{% extends 'layout/master.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="">Update Communications</a>
+{% endblock %}
+
+{% block extrajavascript %}
+  {{ block.super }}
+
+  <script type="text/javascript" src="{{ MEDIA_URL }}js/weekgrid.js"></script>
+  <script type="text/javascript" src="/static/js/tiny_mce/tiny_mce.js"></script>
+  <script type="text/javascript">
+    tinyMCE.init({
+      mode : "exact",
+      elements : "id_description",
+      theme : "advanced"
+    });
+  </script>
+
+{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+    {% csrf_token %}
+    <h2>My Communication Settings</h2>
+    <table class="data cols">
+      <tr>
+        <th>Email</th>
+        <td>
+          {% if base_profile.communication %}
+            Staff administrators and organisations may contact you from time to time in order to send you information and updates about volunteering opportunities via {{ FRIENDLY_NAME }}.
+          {% else %} 
+            You have opted out of receiving information and updates about volunteering opportunities via {{ FRIENDLY_NAME }}.
+          {% endif %}
+        </td>
+      </tr>
+    <tr><th></th><td><input type="submit" value="{% if base_profile.communication %}I do not want to receive updates from staff administrators and organisations{% else %}I would like to receive updates from staff administrators and organisations{% endif %}"/></td></tr>
+  </table>
+
+</form>
+  
+{% endblock %}

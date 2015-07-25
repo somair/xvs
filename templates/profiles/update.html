@@ -1,0 +1,359 @@
+{% extends 'layout/master.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'profiles.views.update' %}">Update Profile</a>
+{% endblock %}
+
+{% block extrajavascript %}
+  {{ block.super }}
+
+  <script type="text/javascript" src="{{ MEDIA_URL }}js/weekgrid.js"></script>
+  <script type="text/javascript" src="/static/js/tiny_mce/tiny_mce.js"></script>
+  <script type="text/javascript">
+    tinyMCE.init({
+      mode : "exact",
+      elements : "id_description",
+      theme : "advanced"
+    });
+  </script>
+
+{% endblock %}
+
+{% block content %}
+
+<form method="post" enctype="multipart/form-data" >
+  {% csrf_token %}
+
+  {% if user.get_profile.is_volunteer %}
+    <h2>My Volunteer Profile</h2>
+    <table class="data cols">
+      <tr>
+        <td></td>
+        <td><h3 class="compact">Course Information</h3></td>
+      </tr>
+
+      {% if features.volunteer_student_id %}
+
+        <tr>
+          <th>Student ID</th>
+          <td>
+            {{ vpform.student_id.errors }}
+            {{ vpform.student_id }}
+          </td>
+        </tr>
+
+      {% endif %}
+
+      {% if features.volunteer_school %}
+        <tr>
+          <th>School</th>
+          <td>
+            {{ vpform.school.errors }}
+            <select id="id_school" name="school">
+              <option value="">Please select...</option>
+              {% for faculty in faculties %}
+                <option value="{{ faculty }}" {% if faculty.name == vpform.school.value %}selected{% endif %}>{{ faculty }}</option>
+              {% endfor %}
+            </select>
+          </td>
+        </tr>
+      {% endif %}
+
+      <tr>
+        <th>
+          {% if features.course_list %}
+            Course
+          {% else %}
+            Course name
+          {% endif %}
+        </th>
+        <td>
+          {% if features.course_list %}
+
+              {{ vpform.course.errors }}
+              <select id="id_course" name="course">
+                <option value="">Please select...</option>
+                {% for faculty in faculties %}
+                  <optgroup label="{{ faculty }}">
+                  {% for course in faculty.course_set.all %}
+                    <option value="{{ course }}" {% if course.name == vpform.course.value %}selected{% endif %}>{{ course }}</option>
+                  {% endfor %}
+                  </optgroup>
+                {% endfor %}
+              </select>
+
+            {% else %}
+              {{ vpform.course.errors }}
+              {{ vpform.course }}
+            {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <th>I am a</th>
+        <td>
+          {{ vpform.year.errors }}
+          {{ vpform.postgrad.errors }}
+          {{ vpform.international.errors }}
+          {{ vpform.postgrad }}{{ vpform.international }} graduating in {{ vpform.year }}
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td><h3>Contact Information</h3>
+		<p><i>Your contact information will only be shared with volunteering organisations that you offer to take opportunities with.</i></p>
+</td>
+      </tr>
+      <tr>
+        <th>Email address<br/>{% if features.contact_email %}&nbsp;{% endif %}</th>
+        <td>{{ user.email }}</td>
+      </tr>
+      {% if features.contact_email %}
+        <tr>
+          <th>Alternative contact email address</th>
+          <td>
+            {{ vpform.contact_email.errors }}
+            {{ vpform.contact_email }}
+            <p><b>Optional</b>. If you would like emails from {{ FRIENDLY_NAME }} to be sent to a different email address than the one you registered with, enter your alterative email address here.<br/>&nbsp;</p>
+          </td>
+        </tr>
+      {% endif %}
+      <tr>
+        <th>Phone number</th>
+        <td>
+          {{ vpform.phone_number.errors }}
+          {{ vpform.phone_number }}
+        </td>
+      </tr>
+
+      {% if features.volunteer_address %}
+
+        <tr>
+          <th>Address</th>
+          <td>
+            {{ vpform.address.errors }}
+            {{ vpform.address }}
+          </td>
+        </tr>
+
+      {% endif %}
+
+      <tr>
+        <td></td>
+        <td><h3>Personal Information</h3></td>
+      </tr>
+      {% if features.volunteer_photos %}
+        <tr>
+          <th>Photo</th>
+          <td>
+            <p>Upload a photo to be shown on your volunteering CV here. The image should be a JPG that is at least 200px wide. We will automatically size your photo to fit on the page. Click the button below to choose a file from your computer to upload.</p>
+
+            {{ vpform.photo.errors }}  
+            {{ vpform.photo }}
+          </td>
+        </tr>
+      {% endif %}
+      <tr>
+        <th>Gender</th>
+        <td>
+          {{ vpform.gender.errors }}
+          {{ vpform.gender }}
+        </td>
+      </tr>
+      <tr>
+        <th>Bio</th>
+        <td>
+          {{ vpform.bio.errors }}
+          {{ vpform.bio }}
+          <p>Please tell us and organisations you'll be applying to about yourself, your experience, hobbies and interests. This will help us match you to a volunteer role.</p>
+        </td>
+      </tr>    
+      <tr>
+      {% if features.reference_file %}
+        <th>Reference</th>
+        <td>
+          {% if not vprofile.referencefile %}
+            <div style="background-color: #f5cdce; border: 1px solid red; padding: 10px; margin-bottom: 10px;">You haven't uploaded a reference file yet! You must upload a reference file to apply for positions. Click the button below to choose a file from your computer to upload.</div>
+            {{ vpform.referencefile.errors }}  
+            {{ vpform.referencefile }}
+          {% else %}
+            <a href="{% url 'profiles.views.serve_reference_file' vprofile.profile.user.id %}" >View reference</a><br/>
+            <input type="checkbox" id="delete_reference" name="delete_reference" value="delete"/><label for="delete_reference">Delete reference</label>
+
+          {% endif %}
+        </td>
+      {% endif %}
+      </tr><tr>
+      {% if features.cv %}
+        <th>CV</th>
+        <td>
+          {% if not vprofile.cv %}
+            <p>You should upload your CV so that organisations can see your past experience. Click the button below to choose a file from your computer.</p>
+            {{ vpform.cv.errors }}  
+            {{ vpform.cv }}
+          {% else %}
+            <a href="{% url 'profiles.views.serve_cv' vprofile.profile.user.id %}" >View CV</a><br/>
+            <input type="checkbox" id="delete_cv" name="delete_cv" value="delete"/><label for="delete_cv">Delete CV</label>
+
+          {% endif %}
+        </td>
+      {% endif %}
+    </table>
+
+    {{ vpform.hours.errors }}
+
+    {% if features.availability %}
+      <h3>My Availability</h3>
+      <p>On the grid below, click the boxes to indicate when you would prefer to volunteer your time. This helps us match you with suitable positions. For instance, you could indicate that you are only available on Tuesday and Thursday afternoons, or all day on Saturdays.</p>
+      {{ vpform.hours }}
+    {% else %}
+      {# Show a hidden form so that people's availability settings are preserved while this feature is disabled. #}
+      <div style="display: none;">
+        {{ vpform.hours }}
+      </div>
+    {% endif %}
+    
+    {% if features.categories %}
+
+      <h4>Interests</h4>
+      <p>Select the type of positions you are interested in applying for. This will help us find you your perfect volunteering opportunity.</p>
+      {{ vpform.categories }}
+        
+    {% endif %}
+
+  {% endif %}
+
+  {% if user.get_profile.is_representative %}
+    <h2>{{ user.get_profile.representativeprofile.organisation.name }}'s Organisation Profile</h2>
+    <table class="data cols">
+      <tr>
+        <th>Name</th>
+        <td>
+          <b>{{ user.get_profile.representativeprofile.organisation.name }}</b> (contact the staff to change your organisation name)
+        </td>
+      </tr>
+      {% if features.organisation_categories %}
+        <tr>
+          <th>Category</th>
+          <td>
+            {{ opform.category.errors }}
+            {{ opform.category }}
+          </td>
+        </tr>
+      {% endif %} 
+      <tr>
+        <th>Charity Number</th>
+        <td>
+          {{ opform.charity_number.errors }}
+          {{ opform.charity_number }}
+          <p class="hint">Enter your registered charity number here if you have one, otherwise leave the field blank.</p>
+        </td>
+      </tr>
+      <tr>
+        <th>Purpose</th>
+        <td>
+          <p>Write a <b>brief</b> biography (about 30 words) detailing your client group and organisational aims. Volunteers will be able to visit your website for more information.</p>
+          {{ opform.purpose.errors }}
+          {{ opform.purpose }}
+        </td>
+      </tr>      
+      {% if features.organisation_volunteer_policies %}  
+        <tr>
+          <th>Volunteer Policy</th>
+          <td>
+            {{ opform.volunteer_policy.errors }}
+            {{ opform.volunteer_policy }}
+          </td>
+        </tr>      
+      {% endif %}
+      {% if features.organisation_header %}
+        <tr>
+          <th>Description</th>
+          <td>
+            <p>Use this editor to provide as much information as you like about your organisation. It will appear next to the organisation's photo on the organisation's profile page.</p>
+            {{ opform.description.errors }}
+            <style>
+              div.descriptionholder td {
+                padding-right: 0px;
+              }
+
+              div.descriptionholder textarea {
+                width: 600px;
+                height: 300px;
+              }
+            </style>
+            <div class="descriptionholder">
+              {{ opform.description }}
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th>Photo</th>
+          <td>
+            <p>Upload a photo to be shown on your organisation's profile page here. The image should be a JPG that is at least 200px wide. We will automatically size your photo to fit on the page. Click the button below to choose a file from your computer to upload.</p>
+
+            {{ opform.primary_image.errors }}  
+            {{ opform.primary_image }}
+          </td>
+        </tr>
+      {% endif %}
+      <tr>
+        <th>Post Address</th>
+        <td>
+          {{ opform.location.errors }}
+          {{ opform.location }}
+        </td>
+      </tr>
+      {% if features.org_phone_numbers %}
+        <tr>
+          <th>Phone Number</th>
+          <td>
+            {{ opform.phone_number.errors }}
+            {{ opform.phone_number }}
+          </td>
+        </tr>
+      {% endif %}
+      <tr>
+        <th>Website</th>
+        <td>
+          {{ opform.website.errors }}
+          {{ opform.website }}
+          <p class="hint">Your website URL must start with "http://" or "https://".</p>
+        </td>
+      </tr>      
+      <tr>
+        <th>Directions</th>
+        <td>
+          <p>Enter directions to your main workplace for volunteers here.</p>
+          {{ opform.directions.errors }}
+          {{ opform.directions }}
+        </td>
+      </tr>
+    </table>
+    
+    <h2>My Representative Profile</h2>
+    <table class="data cols">
+      <tr>
+        <th>Organisation</th>
+        <td><b>{{ user.get_profile.representativeprofile.organisation.name }}</b> (contact the staff to change your organisation)</td>
+      </tr>
+      <tr>
+        <th>Job Title</th>
+        <td>
+          {{ rpform.job_title.errors }}
+          {{ rpform.job_title }}
+        </td>
+      </tr>
+    </table>
+  {% endif %}
+  
+  <table class="data cols">
+    <tr><th></th><td><input type="submit" value="Save changes to my profile"/></td></tr>
+  </table>
+
+</form>
+  
+{% endblock %}

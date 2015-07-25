@@ -1,0 +1,147 @@
+{% extends 'profiles/profile.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'hours.views.volunteer_hours' v_user.id %}">Hours</a>
+{% endblock %}
+
+{% block extrajavascript %}
+  <!-- autocomplete -->
+  <script>
+    function organisation_good (argument) {
+      $("#organisation_good").show();
+      $("#organisation_not_found").hide();
+    }
+
+    function organisation_not_found (argument) {
+      $("#organisation_good").hide();
+      $("#organisation_not_found").show();
+    }
+
+    function check_organisation_in_a_moment () {
+      setTimeout(check_organisation,200);
+    }
+
+    function check_organisation () {
+      var org = $("#id_manual_organisation").val();
+      console.log("Org", org);
+      $.ajax({
+        type: 'GET',
+        url: '{% url 'organisations-autocomplete' %}',
+        data: {'term': org},
+        success: function(data) {
+          console.log("Response", data);
+          for (var o in data) {
+            if (data[o] == org) {
+              console.log("Match")
+              organisation_good();
+              return;
+            } 
+          }
+          console.log("No match");
+          organisation_not_found();
+        }
+      });
+    }
+
+    $(function(){
+      $("#id_manual_organisation").autocomplete({
+        source: '{% url 'organisations-autocomplete' %}',
+        appendTo: "#suggestions",
+        position: {
+          my: "left top",
+          at: "left bottom",
+          of: "#id_manual_organisation"
+        },
+        select: check_organisation_in_a_moment
+      }).change(check_organisation);
+    });
+  </script>
+  <!-- end autocomplete -->
+{% endblock %}
+
+{% block content %}
+
+  <h2 class="colalign" style="margin-top: 20px;">My Hours</h1>
+
+  {% include 'hours/fragments/hours_table.html' %}
+        
+  <h2 class="colalign" style="margin-top: 20px; margin-bottom: 20px;">Add an Hours Record</h2>
+  
+  <form method="post">
+    {% csrf_token %}
+    <table class="data cols">
+      <tr>
+        <th>Organisation</th>
+        <td>
+
+          {% if features.allow_hours_for_any_organisation %}
+
+            Start typing the name of the organisation below, and select it from the list that appears.<br/>
+            {{ hform.manual_organisation.errors }}
+            {{ hform.manual_organisation }}
+            
+            <div id="suggestions"></div>
+
+            <div id="organisation_good" style="display:none;">
+              <p><b style="color: #067f16">The organisation you have entered is registered in this system.</b> Your hours record will be verified
+              by the representative of this organisation.</p>
+            </div>
+
+            <div id="organisation_not_found" style="display:none;">
+              <p><b style="color: #7f0003">The organisation you have entered could not be found. Your hours record will need to be verified by a staff administrator.</b></p>
+              <p>If you know that the organisation is registered in this system, you should check your spelling. Try typing part of the organisation name and selecting from the list that appears.</p>
+            </div>
+          
+          {% else %}
+
+            {{ hform.organisation.errors }}
+            Choose one of your organisations:<br/>
+            {{ hform.organisation }}<br/>
+            or, if the organisation is not registered on the volunteering system, <br/>
+            enter the name of the organisation below:<br/>
+            {{ hform.manual_organisation.errors }}
+            {{ hform.manual_organisation }}
+            
+            <p style="margin-top: 10px; font-size: 0.9em;">If the organisation you volunteered for is registered on the system but <b>not</b> in<br/> the dropdown above, you should contact the volunteering staff in order to be<br/> added to that organisation's volunteer list.</p>
+
+          {% endif %}
+
+        </td>
+      </tr>
+      <tr>
+        <th>Date worked</th>
+        <td>
+          {{ hform.date_worked.errors }}
+          {{ hform.date_worked }}<br/>&nbsp;
+        </td>
+      </tr>
+      <tr>
+        <th>Duration</th>
+        <td>
+          {{ hform.hours.errors }}
+          {{ hform.minutes.errors }}
+          {{ hform.hours }} hours, {{ hform.minutes }} minutes<br/>&nbsp;
+        </td>
+      </tr>
+      <tr>
+        <th>Work done</th>
+        <td>
+          Optionally, describe what work you did when you volunteered.<br/>
+          {{ hform.description.errors }}
+          {{ hform.description }}<br/>&nbsp;
+        </td>
+      </tr>
+      <tr>
+        <th></th>
+        <td>
+          <input type="submit" value="Add record!"/><br/>
+          Remember, all hours records are verified by organisation representatives or volunteering admin staff.
+        </td>
+    </table>
+  </form>
+    
+{% endblock %}

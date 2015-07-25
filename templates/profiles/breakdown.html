@@ -1,0 +1,43 @@
+{% extends 'layout/master.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'reports.views.user_breakdown' %}">Volunteer Breakdown Report</a>
+{% endblock %}
+
+{% block content %}
+
+  <h2>Volunteer Breakdown Report</h2>
+
+  <table class="data big">
+    <thead>
+      <tr>
+        <th class="right">Number of Volunteers</th>
+        <th class="right">Percentage</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for count in counts %}
+        {% if count.is_break %}
+          <tr class="break">
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        {% else %}
+          <tr>
+            <td class="right">{{ count.count }}</td>
+            <td class="right">{{ count.percentage }}</td>
+            <td class="title">{{ count.name }}</td>
+          </tr>
+        {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>
+  
+    
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'pages/index.html' %}
+
+{% load url from future %}
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'positions-calendar' %}">Calendar</a>
+{% endblock %}
+
+{% block content %}
+
+  <style>
+    .date { font-weight: bold; float: left; width: 110px; }
+    .info { margin-left: 110px; }
+    .position { margin-bottom: 20px; }
+    .title { font-size: 1.2em;}
+  </style>
+
+  <h2>Upcoming Opportunities</h2>
+
+  {% for label, ps in positions %}
+    {% if ps %}
+
+      <h3>{{ label }}</h3>
+
+      {% for position in ps %}
+        <div class="position">
+          <div class="date">
+            {% if position.closeness %}
+              <span class="close_date">{{ position.closeness }}</span>
+            {% else %}
+              {{ position.date_start }}
+            {% endif %}
+          </div>
+          <div class="info">
+            <div class="title"><a href="{% url 'positions.views.position' position.id %}" class="entity position">{{ position.name }}</a> at <a href="{% url 'positions.views.organisation' position.organisation.id %}" class="entity organisation">{{ position.organisation.name }}</a></div>
+            <div class="summary">{{ position.summary }}</div>
+          </div>
+        </div>
+      {% endfor %}
+
+    {% endif %}
+
+  {% endfor %}
+
+{% endblock %}

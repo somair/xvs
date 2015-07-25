@@ -1,0 +1,60 @@
+{% extends 'layout/master.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'reports.views.awards' %}">Award Records</a>
+{% endblock %}
+
+{% block extracss %}
+  <link rel="stylesheet" href="//cdn.datatables.net/1.10.0/css/jquery.dataTables.css" type="text/css"/>
+{% endblock %}
+
+{% block extrajavascript %}
+  <script type="text/javascript" src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
+   <script type="text/javascript" charset="utf-8">
+    $(function(){
+      var volunteer_table = $('#volunteer_table').DataTable({
+          "stateSave": true,
+          "pageLength": 100
+        });
+    })
+   </script>
+{% endblock %}
+
+{% block content %}
+
+ <h2><a href="?{{ request.META.QUERY_STRING }}&amp;export=xls" class="rbutton icon excel">Export as XLS</a>
+    <div class="filter">
+    </div>
+    Awards Report
+  </h2>
+  <div class="activityreport">
+
+      <table id="volunteer_table" class="display">
+	    <thead>
+	      <tr>
+	        <th>First Name</th>
+	        <th>Last Name</th>
+	        <th>Award</th>
+	        <th>Awarded</th>
+	      </tr>
+	    </thead>
+	    <tbody>
+	    {% for a in awards %}
+	    <tr>
+	      <td>{{ a.user.first_name }}</td>
+	      <td>{{ a.user.last_name }}</td>
+	      <td>{{ a.award.name }}</td>
+	      <td>{{ a.date_awarded }}</td>
+	    </tr>
+	    {% endfor %}
+	    </tbody>
+	    </table>
+
+  </div>
+  
+
+{% endblock %}

@@ -1,0 +1,5 @@
+*.pyc
+*~
+.DS_Store
+uploads
+local_settings.py

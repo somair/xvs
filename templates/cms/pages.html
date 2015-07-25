@@ -1,0 +1,14 @@
+{% extends 'cms/base.html' %}
+
+{% block title %}CMS Pages{% endblock %}
+
+
+{% block content %}
+{% if pages %}
+<ul>
+{% for page in pages %}
+	<li><a href={{ page.id|urlencode }}>{{ page.page_name }}</a></li>
+{% endfor %}
+</ul>
+{% endif %}
+{% endblock %}

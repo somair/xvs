@@ -1,0 +1,79 @@
+{% extends 'cms/base.html' %}
+
+{% block extracss %}
+	<style type="text/css">
+		td {
+		 	padding:3px;
+		}
+		th {
+		 	padding: 3px;
+		 	color: white;
+		 	background-color:#4B5054;
+		}
+		tr:nth-child(odd) {
+		    background-color: #EEEEEE;
+		}
+		span.button {
+			padding:5px;
+		}
+	</style>
+{% endblock extracss %}
+
+{% block title %}Blog Admin{% endblock %}
+
+
+{% block content %}
+
+	<div class="css_left">
+
+		<table class="swish">
+			<tr><th style="color: black;">Blog Functions</th></tr>
+			<tr>
+			  <td class="button">
+			    <a class="icon person" href="/blogs/">View blog</a>
+			  </td>
+			</tr>
+			<tr>
+			  <td class="button">
+			    <a class="icon person" href="/blogs/new">Write new blog entry</a>
+			  </td>
+			</tr>
+		</table>
+
+	</div>
+
+	<div style="float: left; padding-left: 20px; width: 620px; margin-top: 21px;">
+		<h2 style="color: white; background-color:#4B5054; padding:5px; margin-bottom:0;">Manage {% if user.is_staff %}Site{% else %}My{% endif %} Blog</h2>
+
+			<table style="width:100%; padding:0; text-align:left;">
+				<tr>
+					<th>Entry Title</th>
+					<th>Status</th>
+					<th>Publish?</th>
+					<th>Edit</th>
+					<th>Delete</th>
+				</tr>
+
+				{% for page in pages %}
+					<tr>
+						<td>{{ page.title }}</td>
+						<td>{% if page.status == 1 %}Published{% else %}Draft{% endif %}</td>
+						<td>
+							{% if page.status == 1 %}
+								<a href=/blogs/publish/{{ page.id|urlencode }}>Unpublish</a>
+							{% else %}
+								<a href=/blogs/publish/{{ page.id|urlencode }}>Publish</a>
+							{% endif %}
+						</td>
+						<td><a href=/blogs/edit/{{ page.id|urlencode }}>Edit</a></td>
+						<td><a href=/blogs/delete/{{ page.id|urlencode }}>Delete</a></td>
+					</tr>
+				{% empty %}
+					<tr>
+						<td colspan="6" style="padding: 30px; text-align: center;">You haven't written any blog entries yet. Click the write new button on the left to start.</td>
+					</tr>
+				{% endfor %}
+		</table>
+	</div>
+
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'layout/master.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'offers.views.recent' %}">Recent Applications</a>
+{% endblock %}
+
+{% block content %}
+
+  <h3>Last 50 Active Applications</h3>
+
+  <table class="data rowhelp" style="font-size: 12px; width: 100%">
+    <thead>
+      <th>Last Activity</th>
+      <th>State</th>
+      <th>Volunteer</th>
+      <th>Position</th>
+      <th>Details</th>
+    </thead>
+
+    <tbody>
+      {% for offer in offers %}
+        <tr>
+          {% if offer.time_withdrawn %}
+            <td>{{ offer.time_withdrawn|date:"j M Y" }}</td><td>Withdrawn</td>
+          {% else %}{% if offer.time_confirmed_started and features.organisation_confirms_start %}
+            <td>{{ offer.time_confirmed_started|date:"j M Y" }}</td><td>Confirmed started by <br/>{{ offer.representative.organisation }}</td>
+          {% else %}{% if offer.time_representative_accepted %}
+            <td>{{ offer.time_representative_accepted|date:"j M Y" }}</td><td>Accepted by <br/>{{ offer.representative.get_full_name }}</td>
+          {% else %}{% if offer.time_staff_accepted and offer.time_volunteer_accepted %}
+            <td>{{ offer.time_staff_accepted|date:"j M Y" }}</td><td>Approved by <br/>{{ offer.staff.get_full_name }}</td>
+          {% else %}{% if offer.time_volunteer_accepted %}
+            <td>{{ offer.time_volunteer_accepted|date:"j M Y" }}</td><td>Offered, awaiting approval</td>
+          {% else %}{% if offer.time_staff_accepted %}
+            <td>{{ offer.time_staff_accepted|date:"j M Y" }}</td><td>Suggested by <br/>{{ offer.staff.get_full_name }}</td>
+          {% else %}
+            <td>???</td><td>ERROR</td>
+          {% endif %}{% endif %}{% endif %}{% endif %}{% endif %}{% endif %}
+
+    <td><a href="{% url 'profiles.views.profile' offer.volunteer.id %}" class="entity volunteer">{{ offer.volunteer.get_full_name }}</a></td>
+    <td>
+      <a href="{{ offer.position.get_absolute_url }}" class="entity position">{{ offer.position.name }}</a><br/>
+      <a href="{{ offer.position.organisation.get_absolute_url }}" class="entity organisation">{{ offer.position.organisation }}</a>
+    </td>
+    <td><a href="{% url 'offers.views.offer' offer.id %}">See Application Details</a></td>
+  </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+{% endblock %}

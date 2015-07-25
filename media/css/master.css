@@ -1,0 +1,857 @@
+@import "reset.css";
+@import "text.css";
+@import "grid.css";
+@import "utilities.css";
+/* DO NOT MAKE CHANGES TO MASTER.LESS OR MASTER.CSS */
+/* Make style changes to custom.less and custom-overrides.less */
+/* lessc: master.less */
+table.swish {
+  border: 1px solid #aaaaaa;
+  margin: 20px 7px 20px 0;
+  padding: 0;
+  border-spacing: 0;
+  border-radius: 8px;
+}
+table.swish td {
+  margin: 0;
+  width: 291px;
+  padding: 10px 10px;
+  background-color: #EEE;
+  background: -webkit-gradient(linear, left bottom, left top, color-stop(0, #eeeeee), color-stop(1, #ffffff));
+  background: -moz-linear-gradient(center bottom, #eeeeee 0%, #ffffff 100%);
+  border-right: 1px solid #aaaaaa;
+  border-bottom: 1px solid #aaaaaa;
+  vertical-align: top;
+}
+table.swish td:last-child {
+  border-right-width: 0px;
+}
+table.swish tr:first-child td:first-child,
+table.swish tr:first-child th:first-child {
+  border-top-left-radius: 8px;
+}
+table.swish tr:first-child td:last-child,
+table.swish tr:first-child th:last-child {
+  border-top-right-radius: 8px;
+}
+table.swish tr:last-child td,
+table.swish tr:last-child th {
+  border-bottom-width: 0px;
+}
+table.swish tr:last-child td:first-child,
+table.swish tr:last-child th:first-child {
+  border-bottom-left-radius: 8px;
+}
+table.swish tr:last-child td:last-child,
+table.swish tr:last-child th:last-child {
+  border-bottom-right-radius: 8px;
+}
+table.swish td.good,
+table.swish td.bad {
+  background-position: 287px 12px;
+  background-repeat: no-repeat;
+}
+table.swish td.good {
+  background-image: url(../img/icons/accept.png);
+}
+table.swish td.bad {
+  background-image: url(../img/icons/exclamation.png);
+}
+table.swish tr {
+  margin: 0;
+  padding: 0;
+}
+table.swish th,
+table.swish td.section {
+  margin: 0;
+  background-color: #CCC;
+  background: -webkit-gradient(linear, left bottom, left top, color-stop(0, #cccccc), color-stop(1, #eeeeee));
+  background: -moz-linear-gradient(center bottom, #cccccc 0%, #eeeeee 100%);
+  text-align: left;
+  padding: 3px 10px;
+  border-bottom: 1px solid #aaaaaa;
+}
+table.swish th h1,
+table.swish td.section h1,
+table.swish th h2,
+table.swish td.section h2,
+table.swish th h3,
+table.swish td.section h3,
+table.swish th h4,
+table.swish td.section h4,
+table.swish th h5,
+table.swish td.section h5,
+table.swish th h6,
+table.swish td.section h6 {
+  margin-bottom: 0px;
+}
+table.swish tr:first-child th,
+table.swish td.section {
+  border-radius: 8px 8px 0 0;
+}
+table.swish td.section {
+  font-size: 0.8em;
+  font-weight: bold;
+}
+table.swish a {
+  text-decoration: none;
+  display: block;
+}
+table.swish td.button {
+  width: 311px;
+  padding: 0px;
+}
+table.swish td.button a {
+  padding: 10px 20px;
+}
+table.swish td.button .icon {
+  background-repeat: no-repeat;
+  background-position: 12px 12px;
+  padding-left: 34px;
+}
+table.swish td.button a:hover {
+  background-color: #CCC;
+}
+table.swish.right {
+  float: right;
+  margin-left: 100px;
+}
+table.swish.left {
+  float: left;
+  margin-right: 80px;
+}
+/* Instance-specific colours */
+body {
+  font-family: Helvetica, Arial, sans-serif;
+  margin-bottom: 20px;
+}
+#wrapper {
+  width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+}
+a {
+  color: #888888;
+}
+/* Any link to an object where the link text is the name of the object, like a position, organisation, etc. */
+a.entity {
+  color: black;
+  text-decoration: none;
+  border-bottom: 1px dotted #AAA;
+  padding-left: 20px;
+  background-repeat: no-repeat;
+  background-image: url(../img/icons/brick.png);
+  background-position: top left;
+}
+h2 a.entity,
+h3 a.entity {
+  background-position: center left;
+}
+a.entity:hover {
+  border-bottom: 1px solid black;
+}
+a.entity.position {
+  background-image: url(../img/icons/script.png);
+}
+a.entity.volunteer {
+  background-image: url(../img/icons/user.png);
+}
+a.entity.organisation {
+  background-image: url(../img/icons/building.png);
+}
+a.entity.representative {
+  background-image: url(../img/icons/user_suit.png);
+}
+a.entity.email {
+  background-image: url(../img/icons/email.png);
+}
+a.entity.website {
+  background-image: url(../img/icons/world_link.png);
+}
+table.swish td.button a {
+  color: #656565;
+}
+.green {
+  color: #656565;
+}
+#header {
+  margin-bottom: 10px;
+  color: #656565;
+  font-weight: bolder;
+  line-height: 0;
+  width: 960px;
+  position: relative;
+}
+#header .site_string {
+  position: absolute;
+  left: 176px;
+  top: 151px;
+  font-size: 44px;
+  text-transform: lowercase;
+}
+#header .site_string a {
+  color: #656565;
+  text-decoration: none;
+  position: relative;
+  top: -10px;
+  font-size: 0.7em;
+}
+#header h1 {
+  margin: 0;
+}
+#header a#logo {
+  display: block;
+  text-decoration: none;
+}
+#header #resetpasswordlink {
+  font-size: 10px;
+  font-weight: normal;
+  text-decoration: none;
+  color: #999;
+}
+#login {
+  float: right;
+}
+#nav {
+  height: 30px;
+  padding-top: 7px;
+}
+#nav a {
+  text-decoration: none;
+  padding: 5px 17px 5px 10px;
+  background-color: #CCC;
+  color: black;
+  font-weight: bold;
+  font-size: 80%;
+  background-image: url(../img/chevron-black.png);
+  background-position: right 7px;
+  background-repeat: no-repeat;
+}
+#nav a:last-child {
+  background-color: #656565;
+  color: white;
+  background-image: none;
+  padding: 5px 10px;
+}
+#nav a:hover {
+  background-color: #656565;
+  background-image: url(../img/chevron-white.png);
+  color: white;
+}
+#nav a:last-child:hover {
+  background-image: none;
+  cursor: default;
+}
+.pendingaction {
+  padding-bottom: 30px;
+}
+#messages {
+  font-size: 2em;
+  font-weight: bold;
+  color: #656565;
+  padding-bottom: 20px;
+}
+ul.cv li {
+  margin-bottom: 10px;
+}
+#content {
+  position: relative;
+}
+#footer {
+  clear: both;
+  margin-top: 10px;
+  padding-top: 10px;
+  padding-bottom: 20px;
+  border-top: 2px solid #656565;
+  font-size: 80%;
+  text-align: right;
+}
+.pendingaction table.summary {
+  font-weight: normal;
+}
+.pendingaction .label {
+  font-weight: bold;
+  width: 100px;
+}
+.pendingaction .reason {
+  display: none;
+  padding-top: 10px;
+  padding-left: 27px;
+}
+.pendingaction .reason .reasonreason {
+  display: none;
+}
+.pendingaction .reason textarea {
+  display: none;
+  width: 70%;
+  height: 80px;
+}
+.pendingaction label {
+  display: block;
+  padding: 2px 2px;
+}
+.pendingaction label input {
+  position: relative;
+  top: 2px;
+}
+.pendingaction label:hover {
+  background-color: #656565;
+  color: white;
+}
+.pendingaction .result {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #656565;
+}
+table.rowhelp tr:hover td {
+  background-color: #DDD;
+}
+table.rowhelp td,
+table.rowhelp th {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+table.display td.nowrap {
+  white-space: nowrap;
+}
+table.data.big {
+  font-size: 1.5em;
+}
+table.data.big .title {
+  font-weight: bold;
+}
+table.data.big .value {
+  text-align: right;
+  width: 80px;
+}
+table.data th {
+  text-align: left;
+}
+table.data th,
+table.data td {
+  padding-right: 20px;
+  vertical-align: top;
+}
+table.data tr.break {
+  height: 15px;
+}
+table.data tr.entry td {
+  border-top: 1px solid black;
+}
+table.data h2,
+table.data h3 {
+  margin-bottom: 0px;
+  margin-top: 30px;
+}
+table.data h3.compact {
+  margin-top: 0px;
+}
+table.data td.right,
+table.data th.right {
+  text-align: right;
+}
+table.data tr.pending td {
+  color: #b86b2e;
+}
+h2.colalign,
+h3.colalign {
+  margin-left: 170px;
+  margin-bottom: 5px;
+}
+table.data.cols th {
+  width: 150px;
+  text-align: right;
+}
+table.data.cols td,
+table.data.cols th {
+  padding-bottom: 10px;
+}
+table.data.cols table.swish th {
+  padding-bottom: 3px;
+}
+table.data.cols input[type="text"] {
+  width: 340px;
+}
+table.data.cols.mini th {
+  width: 80px;
+}
+table.hours .description {
+  color: #7F7F7F;
+}
+table.hours .unreviewed {
+  color: #99181F;
+}
+table.hours .unconfirmed {
+  color: #777;
+}
+table.hours .confirmed {
+  color: #188114;
+}
+table.hours .status {
+  color: #7F7F7F;
+  font-size: 0.8em;
+}
+.weekgrid_widget.pretty th {
+  vertical-align: middle;
+  padding: 10px;
+}
+.weekgrid_widget.pretty th.slot {
+  width: 150px;
+  text-align: right;
+  line-height: 1em;
+}
+.weekgrid_widget.pretty th.slot .times {
+  color: #AAA;
+}
+.weekgrid_widget.pretty select {
+  display: none;
+}
+.weekgrid_widget.pretty .checkbox {
+  width: 100px;
+  height: 33px;
+  margin-right: 1px;
+  margin-bottom: 1px;
+  color: white;
+  padding-top: 17px;
+  text-transform: uppercase;
+  text-align: center;
+  font-size: 10px;
+}
+.weekgrid_widget.pretty .checkbox.off {
+  background-color: #CCC;
+}
+.weekgrid_widget.pretty .checkbox.on {
+  background-color: #656565;
+}
+.weekgrid_widget.pretty .checkbox.match {
+  background-color: #656565;
+}
+.weekgrid_widget.pretty .checkbox.nomatch {
+  background-color: #A8A8A8;
+}
+.weekgrid_widget.pretty.mini {
+  margin-left: 0px;
+  font-size: 8px;
+}
+.weekgrid_widget.pretty.mini .checkbox {
+  width: 50px;
+  height: 20px;
+}
+.weekgrid_widget.pretty.mini .checkbox span {
+  display: none;
+}
+.weekgrid_widget.pretty.tiny {
+  margin-left: 0px;
+  font-size: 8px;
+}
+.weekgrid_widget.pretty.tiny .checkbox {
+  width: 40px;
+  height: 10px;
+}
+.weekgrid_widget.pretty.tiny .checkbox span {
+  display: none;
+}
+.weekgrid_widget.editable .checkbox {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  cursor: pointer;
+}
+.radiolist ul {
+  list-style-type: none;
+}
+.radiolist ul li {
+  margin: 0;
+}
+table.data.cols.datefields input {
+  width: 150px;
+}
+table.data.cols p {
+  margin-bottom: 0.2em;
+}
+.errorlist {
+  color: red;
+  margin: 0;
+  font-size: 0.9em;
+}
+table.swish.registrationform th {
+  width: 150px;
+}
+table.swish.registrationform textarea {
+  width: 250px;
+}
+#id_referrer {
+  width: 250px;
+}
+table.swish form div.label {
+  font-weight: bold;
+  margin-top: 7px;
+}
+table.swish form .tinyhint {
+  font-size: 0.7em;
+  margin-bottom: 7px;
+  font-weight: normal;
+}
+.icon {
+  background-repeat: no-repeat;
+  background-position: 2px 2px;
+  padding-left: 24px;
+}
+.icon.profile {
+  background-image: url(../img/icons/user_edit.png);
+}
+.icon.opportunities {
+  background-image: url(../img/icons/find.png);
+}
+.icon.cv {
+  background-image: url(../img/icons/script.png);
+}
+.icon.applications {
+  background-image: url(../img/icons/script_gear.png);
+}
+.icon.pencil {
+  background-image: url(../img/icons/pencil.png);
+}
+.icon.note {
+  background-image: url(../img/icons/comment.png);
+}
+.icon.printer {
+  background-image: url(../img/icons/printer.png);
+}
+.icon.excel {
+  background-image: url(../img/icons/page_white_excel.png);
+}
+.icon.email {
+  background-image: url(../img/icons/email.png);
+}
+.icon.email_add {
+  background-image: url(../img/icons/email_add.png);
+}
+.icon.org_edit {
+  background-image: url(../img/icons/building_edit.png);
+}
+.icon.opp_new {
+  background-image: url(../img/icons/script_add.png);
+}
+.icon.opp_list {
+  background-image: url(../img/icons/script_go.png);
+}
+.icon.group {
+  background-image: url(../img/icons/group.png);
+}
+.icon.representative {
+  background-image: url(../img/icons/user_suit.png);
+}
+.icon.organisation {
+  background-image: url(../img/icons/building.png);
+}
+.icon.user_delete {
+  background-image: url(../img/icons/user_delete.png);
+}
+.icon.report {
+  background-image: url(../img/icons/report.png);
+}
+.icon.add {
+  background-image: url(../img/icons/add.png);
+}
+.icon.alert {
+  background-image: url(../img/icons/exclamation.png);
+}
+.match {
+  clear: both;
+}
+.matches {
+  padding-bottom: 20px;
+}
+.activityreport h3 {
+  margin-bottom: 0;
+  font-weight: normal;
+}
+.activityreport .big {
+  margin-bottom: 25px;
+}
+.activityreport .big span {
+  font-weight: bold;
+  font-size: 50px;
+}
+.activityreport .section {
+  margin-bottom: 30px;
+}
+.activityreport .section .summary {
+  float: left;
+  width: 250px;
+}
+.activityreport .section table {
+  float: left;
+  width: 600px;
+  border-left: 1px solid black;
+  padding-left: 20px;
+  font-size: 0.8em;
+}
+.activityreport .section th {
+  text-align: left;
+  padding-bottom: 10px;
+}
+.step {
+  padding-top: 20px;
+  width: 30%;
+  padding-left: 1.5%;
+  padding-right: 1.5%;
+  float: left;
+  padding-bottom: 20px;
+  position: relative;
+}
+.step .number {
+  position: absolute;
+  top: -20px;
+  z-index: -100;
+  font-size: 7em;
+  font-weight: bold;
+  color: #dddddd;
+  float: left;
+  line-height: 1em;
+  margin-left: -14px;
+  padding-top: 10px;
+  height: 100px;
+}
+.step .org,
+.step .date {
+  font-size: 0.9em;
+  line-height: 1.0em;
+}
+.step .date {
+  margin-bottom: 8px;
+}
+.step .position {
+  font-weight: bold;
+  margin-bottom: 5px;
+  font-size: 1.2em;
+}
+.step .description {
+  font-size: 0.8em;
+}
+.step .close_date {
+  background-color: #656565;
+  color: white;
+  padding: 4px 5px 3px 5px;
+  font-weight: bold;
+}
+.step.clickable:hover {
+  background-color: #EEE;
+}
+step.done {
+  color: #999;
+}
+step.done .number {
+  color: #CCC;
+}
+a.miniposition {
+  display: block;
+  color: black;
+}
+a.miniposition:hover {
+  background-color: #EEE;
+}
+a.alertbox {
+  display: block;
+  padding: 10px;
+  font-size: 16px;
+  text-decoration: none;
+  margin-bottom: 30px;
+  font-weight: bold;
+  color: white;
+  background-color: #656565;
+}
+.h2widget {
+  float: right;
+  border-radius: 5px;
+  background-color: #656565;
+  display: block;
+  margin-left: 20px;
+  overflow: hidden;
+}
+.h2widgettext {
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+  padding: 5px 10px;
+}
+.filter {
+  float: right;
+  border-radius: 5px;
+  background-color: #656565;
+  display: block;
+  margin-left: 20px;
+  overflow: hidden;
+}
+.filter a,
+.filter label {
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+  padding: 5px 10px;
+  background-color: #CCC;
+  color: black;
+  display: block;
+  float: left;
+  font-weight: normal;
+}
+.filter label {
+  font-weight: bold;
+}
+.filter a.selected {
+  background-color: #656565;
+  color: white;
+  font-weight: bold;
+}
+a.rbutton {
+  float: right;
+  border-radius: 5px;
+  background-color: #656565;
+  display: block;
+  margin-left: 20px;
+  overflow: hidden;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+  padding: 5px 10px;
+  background-position: 16px 5px;
+}
+a.rbutton.popup_visible {
+  height: 32px;
+  padding-top: 16px;
+  background-position: 16px 16px;
+}
+a.rbutton.icon {
+  padding-left: 37px;
+  padding-right: 20px;
+}
+.editlink {
+  text-decoration: none;
+  text-transform: uppercase;
+  font-size: 0.5em;
+  background-color: #CCC;
+  padding: 2px;
+  border-radius: 4px;
+  opacity: 0.8;
+}
+.editlink:hover {
+  opacity: 1;
+}
+.reasonfield textarea {
+  width: 280px;
+  height: 60px;
+  font-family: sans-serif;
+}
+.organisation_info {
+  padding-bottom: 20px;
+}
+.organisation_info img.organisation_primary_image {
+  width: 300px;
+  height: 300px;
+  padding-right: 20px;
+  float: left;
+}
+.organisation_info .organisation_description {
+  width: 640px;
+  float: right;
+}
+.dataTables_wrapper {
+  font-size: 12px;
+  line-height: 1.9em;
+}
+.notes {
+  border: 5px solid #656565;
+  border-radius: 5px;
+  position: absolute;
+  right: 0px;
+  width: 300px;
+  background-color: white;
+  top: 44px;
+}
+.notes .note {
+  padding: 10px;
+  border-bottom: 1px dotted #656565;
+}
+.notes .note.new {
+  border-width: 0px;
+}
+.notes .note .message {
+  margin-bottom: 5px;
+}
+.notes .deleted {
+  font-size: 10px;
+  color: #888;
+}
+.notes .metadata {
+  background: #EEE;
+  padding: 5px;
+  font-size: 9px;
+}
+.notes .metadata .author {
+  font-weight: bold;
+}
+.notes .metadata .time {
+  color: #444;
+}
+.notes .metadata .functions {
+  float: right;
+  position: relative;
+  top: -1px;
+}
+.notes .metadata .functions input {
+  font-size: 9px;
+}
+.notes .new textarea {
+  display: block;
+  width: 268px;
+  height: 100px;
+  padding: 5px;
+  font-family: sans-serif;
+  font-size: 12px;
+  border: 1px solid #CCC;
+  resize: vertical;
+  margin-bottom: 0px;
+}
+.notes .new .metadata {
+  background: #CCC;
+}
+.setfilter {
+  border-radius: 5px;
+  background-color: #cccccc;
+  display: block;
+  overflow: hidden;
+  margin-bottom: 20px;
+  padding: 0px 10px 0px 10px;
+}
+.setfilter .section {
+  float: left;
+  padding: 10px 20px 0px 10px;
+  height: 200px;
+}
+.setfilter .section li {
+  margin: 0;
+  list-style: none;
+}
+.setfilter .section.intro {
+  font-weight: bold;
+}
+.setfilter .section.choices,
+.setfilter .section.submit {
+  border-left: 1px dotted white;
+}
+.setfilter .section.choices.grid li {
+  float: left;
+  width: 130px;
+}
+.setfilter .section.submit {
+  padding-left: 20px;
+}
+.right {
+  text-align: right;
+}
+/* When an instance wants to override a style
+   in a specific selector the override should
+   be written here. */

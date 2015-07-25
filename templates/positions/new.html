@@ -1,0 +1,346 @@
+{% extends 'pages/index.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'positions.views.new' %}">New Position</a>
+{% endblock %}
+
+{% block extrajavascript %}
+  {% if features.position_map %}
+    {% include 'google-maps-script.html' %}
+  {% endif %}
+
+  <script type="text/javascript" src="{{ MEDIA_URL }}js/weekgrid.js"></script>
+  <script type="text/javascript">
+    var map;
+    var marker;
+
+    function display_training() {
+      if ($("#id_training_provided").attr('checked')) {
+        $("#training_details_field").show();
+      } else {
+        $("#training_details_field").hide();
+      }
+    }
+
+    function update_latlong(latLng) {
+      // Clear existing marker.
+      if (marker) {
+        marker.setMap(null);
+      }
+
+      // Make new marker.
+      marker = new google.maps.Marker({
+        position: latLng,
+        map: map
+      });
+
+      // Center view on marker.
+      map.panTo(latLng);
+
+      // Store the location.
+      var lat = latLng.lat().toFixed(10);
+      var lng = latLng.lng().toFixed(10);
+      var str = lat + "," + lng;
+      console.log("New location string", str);
+      $("#id_latlong").val(str);
+
+      // Show that the location has been stored.
+      $("#markerplaced").show();
+
+    }
+
+    function remove_latlong() {
+      if (marker) {
+        marker.setMap(null);
+      }
+
+      $("#id_latlong").val("");
+      $("#markerplaced").hide();
+    }
+
+    function recover_latlong() {
+      var str = $("#id_latlong").val();
+      if (str.length > 0) {
+        console.log("Recovered location string", str);
+        var parts = str.split(",");
+        var lat = parseFloat(parts[0]);
+        var lng = parseFloat(parts[1]);
+        console.log("lat", lat, "lng", lng);
+        
+        update_latlong(new google.maps.LatLng(lat, lng));
+      }
+    }
+
+    $(function(){
+      display_training();
+      $("#id_training_provided").click(display_training);
+
+      {% if features.position_map %}
+        // Centre of Edinburgh.
+        var map_center = new google.maps.LatLng(55.945862,-3.187177)
+
+        // Map
+        var myOptions = {
+          center: map_center,
+          zoom: 12,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+
+        map = new google.maps.Map(document.getElementById("mapcontainer"), myOptions);
+
+        recover_latlong();
+
+        google.maps.event.addListener(map, 'click', function(event) {
+          console.log("New location", event.latLng.lat(), event.latLng.lng());
+          update_latlong(event.latLng);
+        });
+      {% endif %}
+    });
+
+  </script>
+
+{% endblock %}
+
+{% block content %}
+
+  <h2>New Opportunity</h2>
+
+  <form method="post" action="{% if position %}{% url 'positions.views.edit' position.id %}{% else %}{% url 'positions.views.new' %}{% endif %}">
+    {% csrf_token %}
+
+    {% if position_form.errors %}
+    <div id="form-error">
+      <p style="color: red; font-weight: bold;">Your registration could not be completed because of some errors on your form. Please review your form and make corrections as required.</p>
+    </div>
+    {% endif %}
+
+    <table class="data cols">
+      <tr>
+        <th>Volunteer Role Title<br/></th>
+        <td>
+          <p>Enter the role title below, for example, "Fundraising Assistant"</p>
+          {{ position_form.name.errors }}
+          {{ position_form.name }}
+        </td>
+      </tr>
+      <tr>
+        <th>Opportunity Location</th>
+        <td>
+          <p>Enter the address of the place where the volunteering work will be carried out. If the volunteering work takes place outside of a workplace, enter the address where the volunteer will meet you at the beginning of the activity. Make sure to describe how the volunteer will get to the location, including details of any transportation provided.</p>
+          {{ position_form.location.errors }}
+          {{ position_form.location }}
+
+          {% if features.position_map %}
+            <p>You can also show the opportunity location on a map - just click on the map below to place a marker.</p>
+            <div id="mapcontainer"></div>
+            {{ position_form.latlong.errors }}
+            {{ position_form.latlong }}
+            <div id="markerplaced" class="hidden">You have placed a marker. If you'd rather not show a map for the opportunity, <a href="javascript:remove_latlong()">click here</a> to remove it.</div> 
+          {% endif %}
+
+          <p class="">
+        </td>
+      </tr>
+      <tr>
+        <th>Summary</th>
+        <td>
+          <p>Summarize the position in 140 characters max.</p>
+          {{ position_form.summary.errors }}
+          {{ position_form.summary }}
+        </td>
+      </tr>
+      <tr>
+        <th>Opportunity Description</th>
+        <td>
+          <p>350 words max. Try to describe the role in a way that makes it engaging to potential volunteers, e.g. "Have you got an eye for fashion? Why not help in our bright and friendly shop?"</p>
+          {{ position_form.description.errors }}
+          {{ position_form.description }}
+        </td>
+      </tr>
+      <tr>
+        <th>Keywords</th>
+        <td>
+          <p>Describe the position with up to three keywords. For instance, "animals campaign environment". This helps people find your opportunity when searching.</p>
+          {{ position_form.keywords.errors }}
+          {{ position_form.keywords }}
+        </td>
+      </tr>
+      <tr>
+        <th>Person Specification</th>
+        <td>
+          <p>Describe your requirements from the volunteer.</p>
+          <p>Essential (140 chars max):</p>
+          {{ position_form.spec_essential.errors }}
+          {{ position_form.spec_essential }}
+          <p>Desirable (140 chars max):</p>
+          {{ position_form.spec_desirable.errors }}
+          {{ position_form.spec_desirable }}
+        </td>
+      </tr>
+      <tr>
+        <th>Categories</th>
+        <td>
+          <p>Select up to three categories that apply to this opportunity from the list below. This helps volunteers discover opportunities that interest them.</p>
+          {{ position_form.category.errors }}
+          <div class="radiolist">
+            {{ position_form.category }}
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th>Potential skills gained</th>
+        <td>
+          <p>Select the skills that volunteers can gain from this opportunity from the list below.</p>
+          {{ position_form.skills_gained.errors }}
+          <div class="radiolist">
+            {{ position_form.skills_gained }}
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th>Training Provided</th>
+        <td>
+          {{ position_form.training_provided.errors }}
+          {{ position_form.training_provided }} Check this box if training will be provided for this opportunity.
+        </td>
+      </tr>
+      <tr id="training_details_field" class="hidden">
+        <th>Training Details</th>
+        <td>
+          <p>Describe the training that will be provided for this position below.</p>
+          {{ position_form.training_details.errors }}
+          {{ position_form.training_details }}
+        </td>
+      </tr>
+
+      {% if features.travel_expenses %}
+        <tr>
+          <th>Travel Expenses</th>
+          <td>
+            {{ position_form.travel_expenses.errors }}
+            {{ position_form.travel_expenses }}
+          </td>
+        </tr>
+      {% endif %}
+
+      {% if features.position_number_of_volunteers %}
+        <tr>
+          <th>Number of Volunteers</th>
+          <td>
+            <p>How many volunteers are you looking for? You can be approximate if you
+            are seeking a large number of volunteers.</p>
+            {{ position_form.number_of_volunteers.errors }}
+            {{ position_form.number_of_volunteers }}
+          </td>
+        </tr>
+      {% endif %}
+    </table>
+    
+    <h3>Job Times</h3>
+
+    <div class="radiolist" style="margin-left: 170px; ">
+        <p><b>You must choose one of the following two options before you can submit this opportunity.</b></p>
+
+        {{ position_form.oneoff.errors }}
+        {{ position_form.oneoff }}
+    </div>
+    
+    <script type="text/javascript" charset="utf-8">
+        function display_job_times() {
+            var val = $("input:radio[name=oneoff]:checked").val();
+            if (val == "0") {
+                $("#if_oneoff").hide();
+                $("#if_weekly").show();
+                $("#submit_position").show();
+                $("#on_times_choose").show();
+                $("#hours_message").html("Hours weekly");
+                $("#hours_hint").html("Indicate how many hours the volunteer can expect to commit each week on this opportunity.");
+            } else if (val == "1") {
+                $("#if_oneoff").show();
+                $("#if_weekly").hide();
+                $("#submit_position").show();
+                $("#on_times_choose").show();
+                $("#hours_message").html("Hours in total");
+                $("#hours_hint").html("Indicate how many hours in total the volunteer will commit to this opportunity.");
+            }
+        }
+
+        $(function(){
+            
+            // Update the displayed job section when a radio is selected.
+            $("#id_oneoff_0").change(display_job_times);
+            $("#id_oneoff_1").change(display_job_times);
+            
+            // Update the displayed job section when the page finishes loading.
+            display_job_times();
+        });
+    </script>
+
+    <div id="if_weekly" class="hidden">
+<!--        <p style="margin-left: 170px;">Indicate below when it would be suitable for a volunteer to do this job. For instance, you may be looking for a volunteer for Thursday afternoons, or Sunday mornings. We use this info to find suitable volunteers.</p>
+        <p style="margin-left: 170px;">Fill in as many squares as possible to maximise the chances of finding a volunteer that is available.</p> -->
+
+        {% if features.availability %}
+
+          <p style="margin-left: 170px">
+  'Please click the boxes in the grid to indicate the times you're able to accommodate the prospective volunteer. This information is used to match students to opportunities based on their availability. If your role is flexible, simply highlight all of the boxes and specify in the description the number of hours a week you need them to come in.</p>
+
+          {{ position_form.hours.errors }}
+          {{ position_form.hours }}
+
+        {% endif %}
+    </div>
+    
+    <div id="if_oneoff" class="hidden">
+        <p style="margin-left: 170px;">Enter the start and end dates for this opportunity. For one-day opportunities, enter the same date in both boxes.</p>
+        
+        <table class="data cols datefields">
+            <tr>
+                <th>Start date</th>
+                <td>
+                    {{ position_form.date_start.errors }}
+                    {{ position_form.date_start }}
+                </td>
+            </tr>
+            <tr>
+                <th>End date</th>
+                <td>
+                    {{ position_form.date_end.errors }}
+                    {{ position_form.date_end }}
+                    <p class="hint">Enter dates in the format "DD/MM/YYYY"</p>
+                </td>
+            </tr>
+        </table>
+            
+    </div>
+    
+    <table id="on_times_choose" class="data cols datefields hidden">
+        <tr>
+            <th id="hours_message">Hours</th>
+            <td>
+                <p id="hours_hint"></p>
+                {{ position_form.hour_count.errors }}
+                {{ position_form.hour_count }}
+            </td>
+        </tr>
+    </table>
+    
+
+
+    <table id="submit_position" class="data cols hidden">
+      <tr><th></th><td>
+        {% if position.approved %}
+          <p><b style="color: red;">WARNING!</b> This opportunity has <b>already been approved</b> by a staff administrator. Editing the opportunity will cause the opportunity to be de-listed and resubmitted for approval. When the opportunity is approved it will be automatically relisted.</p>
+        {% endif %}
+
+        <input type="submit" value="{% if position %}Edit{% else %}Create{% endif %} opportunity"/>
+      </td></tr>
+    </table>
+
+    </form>
+  
+{% endblock %}

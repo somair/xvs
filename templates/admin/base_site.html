@@ -1,0 +1,18 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block title %}{{ title }} | {% trans 'Django site admin' %}{% endblock %}
+
+{% block stylesheet %}{{ MEDIA_URL }}css/admin.css{% endblock %}
+
+{% block branding %}
+  <h1><a id="logo" href="/"><img src="{{ MEDIA_URL }}img/banner.png" width="960" height="175" alt="Stripe Volunteering"/></a></h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block footer %}
+    <div id="footer" class="{% block footerclass %}{% endblock %}">
+      {% include 'layout/footer.html' %}
+    </div>
+{% endblock %} 

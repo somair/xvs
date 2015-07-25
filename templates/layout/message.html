@@ -1,0 +1,10 @@
+{% extends 'layout/master.html' %}
+
+{% block content %}
+
+<div id="messages">
+  <p class="message">{% block message %}{{ message }}{% endblock %}</p>
+</div>
+
+{% endblock %}
+

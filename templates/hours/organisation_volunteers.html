@@ -1,0 +1,101 @@
+{% extends 'positions/organisation.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'hours.views.organisation_volunteers' organisation.id %}">Volunteers</a>
+{% endblock %}
+
+{% block extracss %}
+  <link rel="stylesheet" href="//cdn.datatables.net/1.10.0/css/jquery.dataTables.css" type="text/css"/>
+{% endblock %}
+
+{% block extrajavascript %}
+  <script type="text/javascript" src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    $(function(){
+      var volunteer_table = $('#volunteer_table').DataTable({
+          "stateSave": true,
+          "pageLength": 100,
+        });
+    })
+  </script>
+{% endblock %}
+
+{% block content %}
+
+  <h2>Volunteer List for <a href="{% url 'positions.views.organisation' organisation.id %}">{{ organisation.name }}</a></h2>
+
+  <p>This list shows all volunteers that are active or have been active with {{ organisation.name }}. Click on a volunteer name for more information, and to modify their status.</p>
+
+  <table id="volunteer_table" class="display">
+    <thead>
+      <tr>
+        <th>Volunteer</th>
+        <th>Position</th>
+        <th>Status</th>
+        <th>Start Date</th>
+        <th>Finish Date</th>
+        <th>&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for commitment in organisation.commitment_set.all %}
+        {% with commitment.volunteer as volunteer %}
+          <tr>
+            <td><a href="{% url 'profiles.views.profile' volunteer.id %}" class="entity volunteer">{{ volunteer.get_full_name }}</a></td>
+            <td>
+              {% if commitment.position %}
+                <a href="{% url 'positions.views.position' commitment.position.id %}" class="entity position">{{ commitment.position.name|truncatewords:8 }}</a>
+              {% else %}
+                (Volunteer added manually)
+              {% endif %}
+            </td>
+            <td>
+              {{ commitment.status }}
+            </td>
+            <td>
+              {{ commitment.started|date:"j M Y" }}
+            </td>
+            <td>
+              {% if commitment.finished %}
+                {{ commitment.finished|date:"j M Y" }}
+              {% else %}
+                &mdash;
+              {% endif %}
+            </td>
+            <td>
+              <a href="{% url 'hours.views.commitment' commitment.id %}">Manage &gt;&gt;</a>
+            </td>
+          </tr>
+        {% endwith %}
+      {% endfor %}
+    </tbody>
+  </table>
+  
+  {% if user.is_staff %}
+    <table class="swish right">
+      <tr><th>
+        <h4>Add a volunteer</h4>
+      </th></tr>
+      <tr><td>
+        <p>Manually add a volunteer to this organisation's list of active volunteers by selecting them from the dropdown below.</p>
+
+        <form method="post" action="{% url 'hours.views.add_volunteer' %}">
+          {% csrf_token %}
+          <input type="hidden" name="organisation_id" value="{{ organisation.id }}"/>
+          <select name="user_id">
+            <option value="">-------</option>
+        {% for user in volunteers %}
+              <option value="{{ user.id }}">{{ user.last_name }}, {{ user.first_name }}</option>
+        {% endfor %}
+          </select>
+          <input type="submit" value="Add this volunteer"/>
+        </form>
+      </td></tr>
+    </table>
+  {% endif %}
+    
+{% endblock %}

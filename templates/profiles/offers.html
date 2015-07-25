@@ -1,0 +1,22 @@
+{% extends 'profiles/profile.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'profiles.views.offers' v_user.id %}">Applications and Invites</a>
+{% endblock %}
+
+{% block content %}
+
+  <h2>Volunteer: {{ v_user.get_full_name }}</h2>
+  <h3>All Applications and Invites</h3>
+
+  <ul>
+    {% for offer in user.offers_made.all %}
+      <li><a href="{% url 'offers.views.offer' offer.id %}">{{ offer.position }}</a></li>
+    {% endfor %}
+  </ul>
+
+{% endblock %}

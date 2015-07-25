@@ -1,0 +1,154 @@
+{% extends 'mailouts/mailouts.html' %}
+
+{% load url from future %}
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'mailer.views.mailout' mailout.id %}">Mailout #{{ mailout.id }}</a>
+{% endblock %}
+
+{% block extrajavascript %}
+  {{ block.super }}
+
+  <script type="text/javascript" src="/static/js/tiny_mce/tiny_mce.js"></script>
+  <script type="text/javascript">
+    tinyMCE.init({
+      mode : "textareas"
+    });
+  </script>
+{% endblock extrajavascript %}
+
+{% block content %}
+
+  <style>
+  h3 { margin-top: 20px; }
+  .email { color: #999; font-size: 0.8em; margin-bottom: 5px; }
+  </style>
+
+  <h2>Mailout #{{ mailout.id }}
+    {% if mailout.sent %}
+      (Sent on {{ mailout.sent }})
+    {% else %}
+      (Draft)
+    {% endif %}
+  </h2>
+  <h5><a href="{% url 'mailout-copy' mailout.id %}">Copy Mailout</a>
+
+  <h2>{{ mailout.organisation }}</h2>
+
+  <div style="float: left; width: 60%">
+    <form method="post">
+      {% csrf_token %}
+
+      {{ form.errors }}
+
+      {% if mailout.body %}
+        <h3>{% if mailout.sent %}Sent Mailout{% else %}Preview{% endif %}</h3>
+
+        <div style="{% if not mailout.sent %}border: 1px solid black;{% endif %}">
+          <div style="padding: 10px; background-color: #F0F0EE;">
+            <div><b>To:</b> Example Student &lt;example@xvs.org.uk&gt;</div>
+            <div><b>From:</b> {{ FRIENDLY_NAME }} &lt;{{ SERVER_EMAIL }}&gt;</div>
+            <div><b>Subject:</b> {{ mailout.full_subject }}</div>
+          </div>
+
+          <div style="padding: 10px;">
+            {{ mailout.full_body|safe }}
+          </div>
+        </div>
+
+        {% if not mailout.sent %}
+        <div style="text-align: right; padding-top: 10px;">
+          Ready? <input type="submit" name="send" value="Send to {{ mailout.recipient_set.count }} recipient{{ mailout.recipient_set.count|pluralize }}"/>
+        </div>
+        {% endif %}
+
+      {% endif %}
+
+      {% if not mailout.sent %}
+
+        <h3>Subject</h3>
+        {{ form.subject.errors }}
+        <div style="background-color: #F0F0EE; padding: 10px; border: 1px solid #CCC">
+          [{% if mailout.organisation %}{{ mailout.organisation }}{% else %}{{ FRIENDLY_NAME }}{% endif %}] {{ form.subject }}
+        </div>
+
+        <h3>Body</h3>
+        {{ form.body.errors }}
+        {{ form.body }}
+
+        <div style="text-align: right; padding-top: 10px; padding-bottom: 20px;">
+          <input type="submit" name="delete" value="Delete this draft" style="float: left;"/>
+          <input type="submit" name="save" value="Save and Preview"/>
+        </div>
+
+      {% endif %}
+
+    </form>
+
+    
+
+  </div>
+
+  <div style="float: right; width: 36%">
+    {% if not mailout.sent %}
+      <h3>Add Recipient</h3>
+      
+      <script>
+        $(function(){
+          $("#new_recipient_field").autocomplete({
+            source: "../users/",
+            select: function(event, ui) {
+              $("#recipient_id").val(ui.item.value);
+              $("#new_recipient_form").submit();
+            }
+          });
+        })
+      </script>
+
+      <form method="post" id="new_recipient_form">
+        {% csrf_token %}
+        <input type="hidden" name="new_recipient" value="yes"/>
+        <input type="hidden" id="recipient_id" name="recipient_id" value="{{ recipient.id }}"/>
+        Start typing the name or email address of the recipient below.<br/>
+        <input id="new_recipient_field"/>
+      </form>
+    {% endif %}
+
+    <h3>{{ mailout.recipient_set.all|length }} recipient{{ mailout.recipient_set.all|length|pluralize }}</h3>
+
+    <div style="height: 470px; overflow: auto;">
+      <table class="data mini">
+        <tr class="left">
+          {% if not mailout.sent %}
+            <th></th>
+          {% endif %}
+          <th></th>
+        </tr>
+        {% for recipient in mailout.recipient_set.all %}
+          <tr>
+            {% if not mailout.sent %}
+              <td>
+                <form method="post">
+                  {% csrf_token %}
+                  <input type="hidden" name="recipient_id" value="{{ recipient.id }}"/>
+                  <input type="submit" name="delete_recipient" value="Remove"/>
+                </form>
+              </td>
+            {% endif %}
+            <td>
+              {{ recipient.user.get_full_name }}
+              <div class="email">&lt;{{ recipient.user.email }}&gt;</div>
+            </td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+
+  </div>
+
+  <br class="clear"/>
+
+  
+
+{% endblock %}

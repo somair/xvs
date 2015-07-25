@@ -1,0 +1,57 @@
+{% extends 'pages/index.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'positions.views.organisations' %}">Organisations</a>
+{% endblock %}
+
+{% block extracss %}
+  <link rel="stylesheet" href="//cdn.datatables.net/1.10.0/css/jquery.dataTables.css" type="text/css"/>
+{% endblock %}
+
+{% block extrajavascript %}
+  {{ block.super }}
+  <script type="text/javascript" src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
+   <script type="text/javascript" charset="utf-8">
+    $(function(){
+      var volunteer_table = $('#org_table').DataTable({
+          "stateSave": true,
+          "pageLength": 100
+        });
+    })
+   </script>
+{% endblock %}
+
+{% block content %}
+
+  <h2>Organisations</h2>
+
+  <table id="org_table" class="display">
+    <thead>
+      <tr>
+        <th>Organisation</th>
+        <th></th>
+        <th>Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for organisation in organisations %}
+        <tr>
+          <td><a href="{% url 'positions.views.organisation' organisation.id %}" class="entity organisation">{{ organisation.name }}</a></td>
+          <td>
+            {% if organisation.current_positions|length > 0 %}
+              {{ organisation.current_positions|length }} <span style="font-size: 9px">opportunit{{ organisation.current_positions|length|pluralize:"y,ies" }}</span>
+            {% else %}
+              &mdash;
+            {% endif %}
+          </td>
+          <td>{{ organisation.purpose|truncatewords:12 }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+    
+{% endblock %}

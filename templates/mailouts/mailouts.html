@@ -1,0 +1,86 @@
+{% extends 'layout/master.html' %}
+
+{% load url from future %}
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'mailer.views.mailouts' '' %}">Mailouts</a>
+{% endblock %}
+
+{% block extracss %}
+  <link rel="stylesheet" href="//cdn.datatables.net/1.10.0/css/jquery.dataTables.css" type="text/css"/>
+{% endblock %}
+
+{% block extrajavascript %}
+  <script type="text/javascript" src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
+   <script type="text/javascript" charset="utf-8">
+    $(function(){
+      var mailout_table = $('#mailout_table').DataTable({
+          "stateSave": true,
+          "pageLength": 100,
+          "columns": [
+            {"dataSort": 1},
+            null,
+            null,
+            null
+          ]
+        });
+    })
+   </script>
+{% endblock %}
+
+{% block content %}
+
+  <h2>
+    <div class="filter">
+      <label>Showing...</label>
+      <a href="?filter=all" {% if filter == 'all' %}class='selected'{% endif %}>all mailouts</a>
+      <a href="?filter=unsent" {% if filter == 'unsent' %}class='selected'{% endif %}>unsent</a>
+    </div>
+    Mailout List{% if organisation %} for {{ organisation }}{% endif %}
+  </h2>
+
+  <table id="mailout_table" class="display">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th style="display: none;"></th>
+        {% if user.is_staff %}<th>Organisation</th>{% endif %}
+        <th>Subject</th>
+        <th>Sent</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for mailout in mailouts %}
+        <tr>
+          <td><a href="{{ mailout.get_absolute_url }}">Mailout {{ mailout.id }}</a></td>
+          <td style="display: none;">{{ mailout.id }}</td>
+          {% if user.is_staff %}
+          <td>
+            {% if mailout.organisation %}
+              {{ mailout.organisation }}
+            {% else %}
+              None
+            {% endif %}
+          </td>
+          {% endif %}
+          <td>
+            {% if mailout.subject %}
+              {{ mailout.subject }}
+            {% else %}
+              No subject
+            {% endif %}
+          </td>
+          <td>
+            {% if mailout.sent %}
+              {{ mailout.sent }}
+            {% else %}
+              Not yet sent
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+    
+{% endblock %}

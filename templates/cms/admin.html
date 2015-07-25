@@ -1,0 +1,87 @@
+{% extends 'cms/base.html' %}
+
+{% block extracss %}
+	<style type="text/css">
+		td {
+		 	padding:3px;
+		}
+		th {
+		 	padding: 3px;
+		 	color: white;
+		 	background-color:#4B5054;
+		}
+		tr:nth-child(odd) {
+		    background-color: #EEEEEE;
+		}
+		span.button {
+			padding:5px;
+		}
+	</style>
+{% endblock extracss %}
+
+{% if pageview %}
+	{% block title %}{{ pageview.page_name }}{% endblock %}
+{% endif %}
+
+{% block content %}
+
+	<div class="css_left">
+
+		<table class="swish">
+			<tr><th style="color: black;">CMS Functions</th></tr>
+			<tr>
+			  <td class="button">
+			    <a class="icon person" href="/site/">View public site</a>
+			  </td>
+			</tr>
+			<tr>
+			  <td class="button">
+			    <a class="icon person" href="/cms/">Create new page</a>
+			  </td>
+			</tr>
+			<tr>
+			  <td class="button">
+			    <a class="icon person" href="/cms/order/">Reorder pages</a>
+			  </td>
+			</tr>
+		</table>
+
+	</div>
+
+	<div style="float: left; padding-left: 20px; width: 620px; margin-top: 21px;">
+		<h2 style="color: white; background-color:#4B5054; padding:5px; margin-bottom:0;">XVS Content Management System</h2>
+
+			<table style="width:100%; padding:0; text-align:left;">
+				<tr>
+					<th>Page Name</th>
+					<th>Status</th>
+					<th>Publish?</th>
+					<th>Preview</th>
+					<th>Edit</th>
+					<th>Delete</th>
+				</tr>
+
+				{% for page in pages %}
+					<tr>
+						<td>{{ page.page_name }}</td>
+						<td>{% if page.status == 1 %}Published{% else %}Draft{% endif %}</td>
+						<td>
+							{% if page.status == 1 %}
+								<a href=/cms/publish/{{ page.id|urlencode }}>Unpublish</a>
+							{% else %}
+								<a href=/cms/publish/{{ page.id|urlencode }}>Publish</a>
+							{% endif %}
+						</td>
+						<td><a href=/cms/pages/{{ page.id|urlencode }}>Preview</a></td>
+						<td><a href=/cms/{{ page.id|urlencode }}>Edit</a></td>
+						<td><a href=/cms/delete/{{ page.id|urlencode }}>Delete</a></td>
+					</tr>
+				{% empty %}
+					<tr>
+						<td colspan="6" style="padding: 30px; text-align: center;">You haven't created any pages yet. Click "Create new page" on the left to get started.</td>
+					</tr>
+				{% endfor %}
+		</table>
+	</div>
+
+{% endblock %}

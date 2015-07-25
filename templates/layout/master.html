@@ -1,0 +1,112 @@
+{% load url from future %}
+<!doctype html>
+<html>
+  <head>
+    <title>{% block pagename %}Volunteering{% endblock %} - {{ FRIENDLY_NAME }}</title>
+
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/master.css?v=2" type="text/css"/>
+    <link rel="stylesheet" href="{{ MEDIA_URL }}css/smoothness/jquery-ui-1.8.7.custom.css" type="text/css"/>
+    {% block extracss %}{% endblock extracss %}
+
+    <script type="text/javascript" src="{{ MEDIA_URL }}js/init.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+    {% block extrajavascript %}{% endblock extrajavascript %}
+
+    {% include 'layout/custom_head.html' %}
+
+  </head>
+  <body class="{% block bodyclass %}{% endblock %}">
+    <div id="wrapper">
+    {% block header %}
+      <div id="header">
+        {% include "layout/header.html" %}
+
+        <div id="login" style="margin-top: 5px; text-align: right; line-height: 1.2em">
+          {% if user.is_anonymous %}
+            <form method="post" action="{% url 'django.contrib.auth.views.login' %}">
+              {% csrf_token %}
+              <table>
+                <tr>
+                  <td>
+                      log in &gt; &nbsp;
+                  </td>
+                  <td>
+                    username<br/>
+                    {{ loginform.username }}
+                  </td>
+                  <td>
+                    password<br/>
+                    {{ loginform.password }}<br/>
+                    <a id="resetpasswordlink" href="{% url 'django.contrib.auth.views.password_reset' %}">forgotten your password?</a>
+                    
+                  </td>
+                  <td>
+                    &nbsp;<br/>
+                    <input type="submit" value="&gt;&gt;"/>
+                  </td>
+                  <td>
+                    &nbsp;<br/>
+                    <input type="hidden" name="next" value="{{ next }}" />
+                  </td>
+                </tr>
+              </table>
+            </form>
+          {% else %}
+            <p>
+              Hello {{ user.first_name }}.
+              {% if user.is_staff %}
+                <a href="/admin/">Admin</a>,
+                <a href="https://xvs.zendesk.com/home">Staff Support</a>,
+                {% if features.cms %}
+                  <a href="/site/admin/">CMS</a>,
+                {% endif %}
+              {% endif %}
+              <a href="{% url 'django.contrib.auth.views.logout' %}">Log out</a>.
+            </p>
+          {% endif %}
+        </div>
+          
+        {% if SITE_STRING %}
+          <div class="site_string">{{ SITE_STRING|safe }}</div>
+        {% endif %}
+        
+      </div>
+    {% endblock %}
+
+      <div id="nav">
+        {% block nav %}
+          {% include 'layout/custom_nav.html' %}
+          <a href="{{ BASE_URL }}">Home</a>
+        {% endblock %}
+      </div>
+
+      {% if messages %}
+      <div id="messages">
+        {% for message in messages %}
+          <div class="message {{ message.tags }}">
+            {% if 'safe' in message.tags %}
+              {{ message|safe }}
+            {% else %}
+              {{ message }}
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      
+    <div id="content" style="clear: both;">
+
+      {% include 'notes/notes.html' %}
+
+      {% block content %}
+      
+      {% endblock content %}
+    </div>
+
+    <div id="footer" class="{% block footerclass %}{% endblock %}">
+      {% include 'layout/footer.html' %}
+    </div>
+    <!--endwrapper--></div>
+  </body>
+</html>

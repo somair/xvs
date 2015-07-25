@@ -1,0 +1,35 @@
+      <h1 style="margin-top: 40px; margin-bottom: 0px;">You're <span class="green">{% if user.is_authenticated %}{% if user.get_profile.volunteerprofile %}5{% else %}10{% endif %}{% else %}15{% endif %}</span> minutes away from volunteering</h1>
+
+      <h2 style="margin-top: 0px; font-weight: normal;">How does it work?</h2>
+
+      <div class="step {% if user.get_profile.volunteerprofile %}done{% endif %}">
+        <span class="number">1</span>
+        {% if user.get_profile.volunteerprofile %}
+          Congratulations - you're signed up and you've created a volunteering profile. Proceed to step two!
+        {% else %}
+          {% if user.is_authenticated %}
+            Congratulations - you're signed up. Now <b>create a volunteering profile</b> to tell us about yourself, your interests and your availability.
+          {% else %}
+            {% if features.availability %}
+              <b>Sign up</b> and create a volunteering profile to tell us about yourself, your interests and your availability.
+            {% else %}
+              <b>Sign up</b> and create a volunteering profile to tell us about yourself and your interests.
+            {% endif %}
+          {% endif %}
+        {% endif %}
+      </div>
+
+      <div class="step">
+        <span class="number">2</span>
+        {% if features.availability %}
+          Only free on Wednesday afternoons? <b>No problem</b>. Our <b>futuristic* opportunity matcher</b> finds opportunities at the times you're available.
+          <div style="font-size: 0.8em; padding-top: 5px;"><b>*</b> Not really. It's actually pretty medieval, but it works!</div>
+        {% else %}
+          Browse through all opportunities on the site, or search by keyword for opportunities that might interest you.
+        {% endif %}
+      </div>
+
+      <div class="step">
+        <span class="number">3</span>
+        Click "I'm interested!" on an opportunity to <b>send your details straight to the organisation</b>. They'll be in touch within 5 working days to discuss the role, and if you're both happy, they'll take you on!
+      </div>

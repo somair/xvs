@@ -1,0 +1,46 @@
+{% extends 'layout/master.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'profiles.views.bulk_deactivate' %}">Bulk Deactivate</a>
+{% endblock %}
+
+{% block content %}
+
+  <h2>Bulk Deactivate Students by Year</h2>
+
+  <table class="data">
+    <tr style="height: 25px;">
+      <th>Graduating Year</th>
+      <th>Total Students</th>
+      <th>Active Students</th>
+      <th>Deactivated Students</th>
+      <th>Functions</th>
+    <tr>
+
+    {% for schoolyear in schoolyears %}
+      <tr style="height: 25px;">
+        {% with schoolyear.active_students.count as active_student_count %}
+          <td>{{ schoolyear.year }}</td>
+          <td>{{ schoolyear.all_students.count }}</td>
+          <td>{{ active_student_count }}</td>
+          <td>{{ schoolyear.inactive_students.count }}</td>
+          <td>
+            {% if active_student_count %}
+              <form method="post" action="?year={{ schoolyear.year }}">{% csrf_token %}<input type="submit" value="Deactivate {{ active_student_count }} students graduating in {{ schoolyear.year }}"/></form>
+            {% else %}
+              There are no active students in this year.
+            {% endif %}
+          </td>
+        {% endwith %}
+      </tr>
+    {% endfor %}
+
+  </table>
+
+ 
+  
+{% endblock %}

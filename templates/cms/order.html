@@ -1,0 +1,39 @@
+{% extends 'cms/base.html' %}
+
+{% block extracss %}
+{{ block.super }}
+<style type="text/css">
+span.button {
+	color: white;
+	background-color:#4B5054;
+	padding:5px;
+}
+</style>
+{% endblock extracss %}
+
+{% block content %}
+<h2 style="color: white; background-color:#4B5054; padding:5px; margin-bottom:0;">
+	Order Pages
+</h2>
+<br />
+<p><a href="/site/admin/">Back to Admin Page</a></p>
+<hr style="height: 1px; color: black; background-color: #000000; border: 0; margin-bottom: 10px;"/>
+<div style="width:25%;float:left;">
+	<p><strong>Page Name</strong></p>
+	{% for page in pages %}
+		<p style="padding-left: 10px; margin-bottom:2px; padding: 8px;">{{ page.page_name }}</p>
+	{% endfor %}
+</div>
+<div style="width:10%;float:left;">
+	<p><strong>Move Up</strong></p>
+	{% for order in order_links %}
+		<p style="padding-left: 10px; margin-bottom:2px;"><a href=/cms/up/{{ order|urlencode }}><img src="/static/img/up.png" alt="up" /></a></p>
+	{% endfor %}
+</div>
+<div style="width:10%;float:left; margin-bottom: 15px;">
+	<p><strong>Move Down</strong></p>
+	{% for order in order_links_reverse %}
+		<p style="padding-left: 10px; margin-bottom:2px;"><a href=/cms/down/{{ order|urlencode }}><img src="/static/img/down.png" alt="down" /></a></p>
+	{% endfor %}
+</div>
+{% endblock %}

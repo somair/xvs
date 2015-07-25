@@ -1,0 +1,119 @@
+{% extends 'profiles/offers.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'offers.views.offer' offer.id %}">{{ offer.position }}</a>
+{% endblock %}
+
+{% block content %}
+
+  <h2>Application summary</h2>
+
+  <div style="float: left; width: 48%">
+    <h3>Volunteer<br/><a href="{% url 'profiles.views.profile' offer.volunteer.id %}" class="entity volunteer">{{ offer.volunteer.get_full_name }}</a></h3>
+
+    {% if features.availability %}
+      {{ offer.volunteer.get_profile.volunteerprofile.hours.rendermini|safe }}
+    {% endif %}
+    
+    <table class="data cols mini">
+
+      {% if features.volunteer_school or features.course_list %}
+        <tr>
+          <th>School</th>
+          <td>{{ offer.volunteer.get_profile.volunteerprofile.school_or_faculty }}</td>
+        </tr>
+      {% endif %}
+      <tr><th>Course</th><td>{{ offer.volunteer.get_profile.volunteerprofile.course }}<br/>
+        <b>{{ offer.volunteer.get_profile.volunteerprofile.get_postgrad_display }} {{ offer.volunteer.get_profile.volunteerprofile.get_international_display }} graduating in {{ offer.volunteer.get_profile.volunteerprofile.get_year_display|capfirst }}</b>
+        </td></tr>
+      <tr><th>Bio</th><td>{{ offer.volunteer.get_profile.volunteerprofile.bio|linebreaksbr }}</td></tr>
+      <tr><th>Email</th><td><a href="mailto:{{ offer.volunteer.email }}" class="entity email">{{ offer.volunteer.email }}</a></td></tr>
+      <tr><th>Phone</th><td>{{ offer.volunteer.get_profile.volunteerprofile.phone_number }}</td></tr>
+    </table>
+
+    {% if features.cover_letter %}
+      <h3>{{ offer.volunteer.first_name }}'s application</h3>
+      <table class="data cols mini">
+        <tr><th></th><td>
+          {% with offer.get_application_reason as reason %}
+            {% if reason %}
+              <p>{{ reason }}</p>
+            {% else %}
+              <p>The volunteer hasn't written an application yet.</p>
+            {% endif %}
+          {% endwith %}
+        </td></tr>
+      </table>
+    {% endif %}
+
+  </div>
+
+  <div style="float: right; width: 48%">
+    <h3>Position<br/><a href="{% url 'positions.views.position' offer.position.id %}" class="entity position">{{ offer.position.name }}</a> at <a href="{% url 'positions.views.organisation' offer.position.organisation.id %}" class="entity organisation">{{ offer.position.organisation.name }}</a></h3>
+
+    {% if features.availability %}
+      {{ offer.position.hours.rendermini|safe }}
+    {% endif %}
+
+    <table class="data cols mini">
+      <tr><th>Location</th>
+        <td>
+          {{ offer.position.location }}
+        </td>
+      </tr>
+      <tr><th>Description</th>
+        <td>
+          <p>{{ offer.position.description|linebreaksbr }}</p>
+          {% if offer.position.skills_gained.count %}
+            <p>This opportunity will assist you in gaining the following skills:</p>
+            <ul>
+              {% for skill in offer.position.skills_gained.all %}
+                <li>{{ skill.name }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+          {% if offer.position.training_provided %}
+            <p><b>Training will be provided by the organisation for this position</b></p>
+          {% endif %}
+          {% if offer.position.travel_expenses != None %}
+            <p><b>{{ offer.position.get_travel_expenses_display }}</b></p>
+          {% endif %}
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  
+
+    
+  <br class="clear"/>
+
+  <h4>Timeline</h4>
+  
+  <table class="data">
+    <tr>
+      <th>Date</th>
+      <th>Action</th>
+    </tr>
+
+    {% for entry in offer.logentries.all %}
+      <tr class="entry">
+        <td style="width: 100px;">{{ entry.time|date:"j M Y" }}</td>
+        <td>{{ entry.user.get_full_name }} {{ entry.get_action_string }}</td>
+      </tr>
+
+      {% if entry.reason %}
+        <tr class="reason">
+          <td></td>
+          <td style="color: #888; font-size: 12px;">{{ entry.reason }}</td>
+        </tr>
+      {% endif %}
+    {% endfor %}
+    
+  </table>
+
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'layout/email.txt' %}
+
+{% block content %}
+Thanks for registering on the Volunteering website!
+
+You registered with the following username:
+{{ username }}
+
+Before you can log in you need to activate your account. Do that now by clicking on the link below:
+
+http://{{ site.domain }}/accounts/activate/{{ activation_key }}/
+{% endblock %}
+

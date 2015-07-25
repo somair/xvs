@@ -1,0 +1,134 @@
+{% extends 'layout/master.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'reports.views.activity' %}">Site Activity</a>
+{% endblock %}
+
+{% block content %}
+
+  <h2>Activity between {{ start }} and {{ end }}</h2>
+
+  <h4>Overview</h4>
+  <table class="data cols">
+  <tr><td>New volunteers</td><td>New organisations</td><td>New representatives</td><td>New positions</td><td>Applications Made</td><td>Applications accepted</td>
+  <tr>
+    <td>{{ new_volunteers|length }}</td>
+    <td>{{ new_organisations|length }}</td>
+    <td>{{ new_representatives|length }}</td>
+    <td>{{ new_positions|length }}</td>
+    <td>{{ offers_made|length }}</td>
+    <td>{{ offers_started|length }}</td>
+  </tr>
+  </table>
+
+  <h4>In depth</h4>
+  <div class="activityreport">
+    
+    <div class="section">
+      <div class="summary">
+        <h3>New Volunteers</h3>
+        <div class='big'><span>{{ new_volunteers|length }}</span> volunteers</div>
+      </div>
+      <table>
+        <tr><th>Volunteer Registered</th><th>Name</th><th>Course</th></tr>
+        {% for volunteer in new_volunteers %}
+          <tr><td>{{ volunteer.date_joined }}</td><td>{{ volunteer.get_full_name }}</td><td>{{ volunteer.get_profile.volunteerprofile.course }}</td></tr>
+        {% endfor %}
+      </table>
+      <br class="clear"/>
+    </div>
+  
+    <div class="section">
+      <div class="summary">
+        <h3>New Organisations</h3>
+        <div class='big'><span>{{ new_organisations|length }}</span> organisations</div>
+      </div>
+      <table>
+        <tr><th>Organisation Created</th><th>Name</th></tr>
+        {% for organisation in new_organisations %}
+          <tr><td>{{ organisation.date_created }}</td><td>{{ organisation.name }}</td></tr>
+        {% endfor %}
+      </table>
+      <br class="clear"/>
+    </div>
+    
+    <div class="section">
+      <div class="summary">
+        <h3>New Representatives</h3>
+        <div class='big'><span>{{ new_representatives|length }}</span> representatives</div>
+      </div>
+      <table>
+        <tr><th>Representative Registered</th><th>Name</th><th>Organisation</th></tr>
+        {% for representative in new_representatives %}
+          <tr><td>{{ representative.date_joined }}</td><td>{{ representative.get_full_name }}</td><td>{{ representative.get_profile.representativeprofile.organisation }}</td></tr>
+        {% endfor %}
+      </table>
+      <br class="clear"/>
+    </div>
+
+    <div class="section">
+      <div class="summary">
+        <h3>New Positions</h3>
+        <div class='big'><span>{{ new_positions|length }}</span> positions</div>
+      </div>
+      <table>
+        <tr><th>Position Created</th><th>Organisation</th><th>Name</th></tr>
+        {% for position in new_positions %}
+          <tr><td>{{ position.date_created }}</td><td>{{ position.organisation }}</td><td>{{ position.name }}</td></tr>
+        {% endfor %}
+      </table>
+      <br class="clear"/>
+    </div>
+  
+    <div class="section">
+      <div class="summary">
+        <h3>Applications Made</h3>
+        <div class='big'><span>{{ offers_made|length }}</span> applications</div>
+      </div>
+      <table>
+        <tr><th>Application Made</th><th>Position</th><th>Volunteer</th></tr>
+        {% for offer in offers_made %}
+          <tr><td>{{ offer.time_volunteer_accepted }}</td><td>{{ offer.position }}</td><td>{{ offer.volunteer.get_full_name }}</td></tr>
+        {% endfor %}
+      </table>
+      <br class="clear"/>
+    </div>
+  
+    <div class="section">
+      <div class="summary">
+        <h3>Applications Accepted</h3>
+        <div class='big'><span>{{ offers_accepted|length }}</span> applications</div>
+      </div>
+      <table>
+        <tr><th>Application Made</th><th>Position</th><th>Volunteer</th></tr>
+        {% for offer in offers_accepted %}
+          <tr><td>{{ offer.time_volunteer_accepted }}</td><td>{{ offer.position }}</td><td>{{ offer.volunteer.get_full_name }}</td></tr>
+        {% endfor %}
+      </table>
+      <br class="clear"/>
+    </div>
+
+    {% if features.organisation_confirms_start %}
+      <div class="section">
+        <div class="summary">
+          <h3>Volunteers Confirmed Started</h3>
+          <div class='big'><span>{{ offers_started|length }}</span> applications</div>
+        </div>
+        <table>
+          <tr><th>Application Made</th><th>Position</th><th>Volunteer</th></tr>
+          {% for offer in offers_started %}
+            <tr><td>{{ offer.time_volunteer_accepted }}</td><td>{{ offer.position }}</td><td>{{ offer.volunteer.get_full_name }}</td></tr>
+          {% endfor %}
+        </table>
+        <br class="clear"/>
+      </div>
+    {% endif %}
+
+  </div>
+  
+
+{% endblock %}

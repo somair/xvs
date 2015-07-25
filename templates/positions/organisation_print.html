@@ -1,0 +1,135 @@
+{% extends 'layout/print.html' %}
+
+{% load url from future %}
+
+
+{% block content %}
+
+  <div class="noprint" style="background-color: #333; padding: 10px 0 10px 10px; margin-bottom: 20px;">
+    <a href="?" style="color: white;">&lt;&lt; Back to full profile</a>
+  </div>
+
+  <h1>
+    {{ organisation }} 
+  </h1>
+
+  {% if features.organisation_header %}
+
+    <div class="organisation_info">
+
+      <img src="{% url 'positions.views.organisation_primary_image' organisation.id %}" class="organisation_primary_image"/>
+
+      <div class="organisation_description">
+
+        {% if organisation.description %}
+          {{ organisation.clean_description|safe }}
+        {% else %}
+          <i style="color: #888888">A description for this organisation has not been submitted yet.</i>
+        {% endif %}
+
+      </div>
+      
+      <br class="clear"/>
+
+    </div>
+
+  {% endif %}
+
+  <div style="float: left; width: 300px; padding-right: 20px;"> 
+
+    <h3>Opportunities</h3>
+
+    <h5>Current</h5>
+    <ul>
+      {% for position in organisation.current_positions %}
+        <li>{{ position.name }}</li>
+      {% empty %}
+        <li>This organisation is not currently advertising any opportunities.</li>
+      {% endfor %}
+    </ul>
+
+    {% if organisation.old_positions %}
+      <h5>Past</h5>
+      <ul>
+        {% for position in organisation.old_positions %}
+          <li>{{ position.name }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% ifequal user.get_profile.representativeprofile.organisation organisation %}
+      <h5>Unapproved</h5>
+      <ul>
+        {% for position in organisation.unapproved_positions %}
+          <li>{{ position.name }}</li>
+        {% empty %}
+          <li>There are no positions awaiting approval right now.</li>
+        {% endfor %}
+      </ul>
+    {% endifequal %}
+
+  </div>
+  
+  <div style="float: right; width: 640px">
+    <h3>Organisation Profile</h3>
+    <table class="data cols mini"> 
+      <tr><th>Purpose</th> 
+        <td> 
+          {{ organisation.purpose|linebreaksbr }}
+        </td> 
+      </tr> 
+      <tr><th>Address</th> 
+        <td>
+          {{ organisation.location|linebreaksbr|default:"The organisation has not supplied this information." }} 
+        </td> 
+      </tr> 
+      {% if features.org_phone_numbers %}
+        <tr><th>Phone</th> 
+          <td>
+            {{ organisation.phone_number|default:"The organisation has not supplied this information." }} 
+          </td> 
+        </tr> 
+      {% endif %}
+      <tr><th>Website</th> 
+        <td>
+          {% if organisation.website %}
+            <a href="{{ organisation.website }}">{{ organisation.website }}</a> 
+          {% else %}
+            The organisation has not supplied this information.
+          {% endif %}
+
+
+        </td> 
+      </tr> 
+      {% if organisation.charity_number %}
+        <tr><th>Charity No.</th> 
+          <td>
+            {{ organisation.charity_number }} 
+          </td> 
+        </tr>
+      {% endif %}
+    </table>
+
+    {% if user.is_staff %}
+    <h3>Admin Staff Information</h3>
+    <table class="data cols mini">
+      <tr>
+        <th>Representatives</th>
+        <td>
+            {% for rp in organisation.representativeprofile_set.all %}
+              <b>{{ rp }}</b><br/>
+              <b>Username</b>: {{ rp.profile.user.username }}<br/>
+              <b>Email</b>: {{ rp.profile.user.email }}<br/>
+
+              <br/>
+            {% empty %}
+              No representative is currently assigned to the organisation.
+            {% endfor %}  
+          </ul>
+        </td>
+      </tr>
+    </table>
+    {% endif %} 
+  </div>
+  
+{% endblock %}

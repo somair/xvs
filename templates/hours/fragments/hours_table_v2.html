@@ -1,0 +1,101 @@
+{% load url from future %}
+
+
+<script type="text/javascript" charset="utf-8">
+  $(function(){
+    $(".deleterecord_link").click(function(){
+      var record_id = $(this).attr("id").substring(7);
+      console.log("Record " + record_id);
+      
+      if (confirm("Are you sure you want to delete this record? This action cannot be undone.")) {
+        $.post("{% url 'hours.views.delete' %}", {
+          csrfmiddlewaretoken: "{{ csrf_token }}",
+          timerecord_id: record_id
+        }, function(data, textStatus, jqXhr) {
+          $("#timerecord_"+record_id).html(data);
+        });
+      }
+      
+      return false;
+    });
+    
+    $(".confirmrecord_link").click(function(){
+      var record_id = $(this).attr("id").substring(8);
+      var that = this;
+      $.post("{% url 'hours.views.mark_record' %}", {
+        csrfmiddlewaretoken: "{{ csrf_token }}",
+        record_id: record_id,
+        status: "correct"
+      }, function(data, textStatus, jqXhr) {
+        console.log("Hello.");
+        console.log(this);
+        $(that).parent().html("The record is now confirmed.");
+      });
+      return false;
+    });
+
+    $(".unconfirmrecord_link").click(function(){
+      var record_id = $(this).attr("id").substring(10);
+      var that = this;
+      $.post("{% url 'hours.views.mark_record' %}", {
+        csrfmiddlewaretoken: "{{ csrf_token }}",
+        record_id: record_id,
+        status: "unconfirmable"
+      }, function(data, textStatus, jqXhr) {
+        $(that).parent().html("The record is now marked as unconfirmable.");
+      });
+      return false;
+    });
+
+  });
+</script>
+
+<table class="data cols hours">
+  {% for timerecord in timerecords %}
+  <tr>
+    <td><strong>{{ timerecord.date_worked }}</strong></th>
+    <td id="timerecord_{{ timerecord.id }}">
+      {% if timerecord.organisation %}
+        <a class="entity organisation" href="{{ timerecord.organisation.get_absolute_url }}">{{ timerecord.organisation_name }}</a>
+      {% else %}
+        {{ timerecord.organisation_name }}
+      {% endif %}
+
+       &mdash; 
+      {{ timerecord.hours }} hour{{ timerecord.hours|pluralize }}{% if timerecord.minutes %}, {{ timerecord.minutes }} minutes{% endif %}
+      
+      {% if not timerecord.reviewed %}
+        &mdash; <span class="status"><span class="unreviewed">verification pending</span></span>
+      {% endif %}
+      
+      {% if timerecord.reviewed %}
+        {% if timerecord.confirmed %}
+          &mdash; <span class='status'><span class="confirmed">confirmed</span> by {{ timerecord.reviewed_by.get_full_name }}</span>
+        {% else %}
+          &mdash; <span class='status'><span class="unconfirmed">unconfirmed</span></span>
+        {% endif %}      
+      {% endif %}
+      
+      {% if timerecord.description %}
+        <div class="description">{{ timerecord.description|linebreaks }}</div>
+      {% endif %}
+      
+      {% if not readonly %}
+
+        <div class="deleterecord">
+          <a id="delete_{{ timerecord.id }}" class="deleterecord_link" href="#">Delete this record</a> 
+          {% if user.is_staff %}
+            {% if timerecord.confirmed %}
+              &mdash; <a id="unconfirm_{{ timerecord.id }}" class="unconfirmrecord_link" href="#">Mark this record as unconfirmable</a>
+            {% else %}
+              &mdash; <a id="confirm_{{ timerecord.id }}" class="confirmrecord_link" href="#">Confirm this record</a>
+            {% endif %}
+          {% endif %}
+        </div>
+
+      {% endif %}
+
+    </td>
+  </tr>
+  {% endfor %}
+</table>

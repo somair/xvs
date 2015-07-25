@@ -1,0 +1,146 @@
+{% extends 'layout/print.html' %}
+
+{% load url from future %}
+
+
+{% block content %}
+
+      <div class="noprint" style="background-color: #333; padding: 10px 0 10px 170px;">
+        <a href="?" style="color: white;">&lt;&lt; Back to full profile</a>
+      </div>
+
+      <h2 style="margin-left: 170px; margin-top: 20px;">{{ profile.user.get_full_name }}
+        {% if profile.is_representative %}
+          at {{ profile.representativeprofile.organisation.name }}
+        {% endif %}        
+      </h2>
+
+  {% if profile.is_representative %}
+
+    <div style="float: left; width: 500px; margin-bottom: 20px; margin-top: 20px;">
+      <table class="data cols" style="width: 600px;">
+        <tr>
+          <th>Job Title</th>
+          <td>
+            {% if profile.representativeprofile.job_title %}{{ profile.representativeprofile.job_title }}{% else %}None provided{% endif %}
+          </td>
+        </tr>
+        <tr>
+          <th>Username</th>
+          <td><tt>{{ profile.user.username }}</tt></td>
+        </tr>
+        <tr>
+          <th>Email</th>
+          <td>{{ profile.user.email }}</td>
+        </tr>
+      </table>
+    </div>
+
+  {% endif %}
+
+  {% if profile.is_volunteer %}
+
+    {% if features.volunteer_photos %}
+
+      <div style="margin-left: 170px; margin-bottom: 20px;">
+          <img src="{% url 'profiles.views.volunteer_photo' profile.user.id %}"/>
+      </div>
+        
+    {% endif %}
+
+    <div style="width: 500px; margin-bottom: 20px; margin-top: 20px;">
+      <table class="data cols" style="width: 600px;">
+        <tr><th>Course</th><td>{{ profile.volunteerprofile.course }}<br/>
+          <b>{{ profile.volunteerprofile.get_postgrad_display }} {{ profile.volunteerprofile.get_international_display }} graduating in {{ profile.volunteerprofile.get_year_display|capfirst }}</b>
+          </td></tr>
+        <tr><th>Bio</th><td>{{ profile.volunteerprofile.bio|linebreaksbr }}</td></tr>
+        <tr><th>Email address</th><td>{{ profile.user.email }}</td></tr>
+        <tr><th>Phone number</th><td>{{ profile.volunteerprofile.phone_number }}</td></tr>
+        {% if features.cv %}
+          <tr><th>CV</th><td>
+            {% if profile.volunteerprofile.cv %}
+              <a href="{% url 'profiles.views.serve_cv' profile.user.id %}" >Download volunteer CV</a>
+            {% else %}
+              <i style="color: #888888">Volunteer has not uploaded a CV</i>
+            {% endif %}
+          </td></tr>
+        {% endif %}
+        {% if features.reference_file %}
+          <tr><th>Reference file</th><td>
+            {% if profile.volunteerprofile.referencefile %}
+              <a href="{% url 'profiles.views.serve_reference_file' profile.user.id %}" >Download volunteer reference file</a>
+            {% else %}
+              <i style="color: #888888">Volunteer has not uploaded a reference file</i>
+            {% endif %}
+          </td></tr>
+        {% endif %}
+      </table>
+    </div>
+
+    <br class="clear"/>
+
+    <table class="data cols">
+      <tr><th>Positions taken</th>
+        <td>
+          <ul class="cv">
+            {% for offer in profile.offers_completed %}
+              <li>
+                {{ offer.time_confirmed_started|date:"j M Y" }}<br/>
+                {{ offer.position.name }} @ {{ offer.position.organisation.name }}
+              </li>
+            {% empty %}
+              <li>No positions taken yet.</li>
+            {% endfor %}
+          </ul>
+        </td>
+      </tr>
+      
+      {% if user.is_staff %}
+        <tr><th>Current applications</th>
+          <td>
+            <ul class="cv">
+              {% for offer in profile.offers_in_progress %}
+                <li>
+                  {% if offer.time_volunteer_accepted %}
+                    {{ offer.time_volunteer_accepted|date:"j M Y" }}<br/>
+                  {% else %}
+                    {{ offer.time_staff_accepted|date:"j M Y" }}<br/>
+                  {% endif %}
+                  {{ offer.position.name }} @ {{ offer.position.organisation.name }}<br/>
+                </li>
+              {% empty %}
+                <li>No applications in progress.</li>
+              {% endfor %}
+            </ul>
+          </td>
+        </tr>
+      {% endif %}
+      
+      
+      
+    </table>
+    
+    <h3 class="colalign">Hours</h3>
+    
+    {% include 'hours/fragments/hours_table.html' %}
+    
+    <table class="data cols">
+      <tr><th>Total</th>
+        <td><b>{{ total_hours }} hour{{ total_hours|pluralize }}{% if total_minutes %}, {{ total_minutes }} minutes{% endif %}</b></td>
+    </table>
+
+    {% if features.endorsement %}
+    <h3>Endorsements</h3>
+    <table class="data cols">
+    <tr><th style="text-align: left;">Representative</th><th style="text-align: left;">Organisation</th><th style="text-align: left;">Endorsement</th></tr>
+    {% for e in endorsements %}
+    <tr><td>{{ e.representative }}</td><td>{{ e.commitment.organisation }}</td><td>{{ e.endorsement_text|linebreaksbr }}</td></tr>
+    {% empty %}
+    <tr><td colspan="3">This volunteer has no endorsements</td></tr>
+    {% endfor %}
+    </table>
+    {% endif %}
+  
+  {% endif %}
+  
+{% endblock %}

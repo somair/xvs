@@ -1,0 +1,21 @@
+{% extends 'layout/master.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'offers.views.representative_offers' %}">Recent Referrals</a>
+{% endblock %}
+
+{% block content %}
+
+  <h3>Recent Referrals</h3>
+
+  <ul>
+    {% for offer in offers %}
+      <li>{{ offer.time_representative_accepted }}: <a href="{% url 'profiles.views.profile' offer.volunteer.id %}">{{ offer.volunteer.get_full_name }}</a> successfully applied for <a href="{% url 'offers.views.offer' offer.id %}">{{ offer.position }}</a></li>
+    {% endfor %}
+  </ul>
+
+{% endblock %}

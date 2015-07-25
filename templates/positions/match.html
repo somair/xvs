@@ -1,0 +1,37 @@
+{% extends 'pages/index.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'positions.views.match' %}">Available Positions</a>
+{% endblock %}
+
+{% block content %}
+
+  <h2>Matches</h2>
+
+  <p>We've used super high-tech algorithms to match you with the following available positions:</p>
+
+  <div id="matches">
+    {% for match in matches %}
+      <div class="match">
+        <div class="css_right">{{ match.matching_slots_render|safe }}</div>
+        <h2><a href="{% url 'positions.views.position' match.id %}">{{ match.name }}</a> at
+          <a href="{% url 'positions.views.organisation' match.organisation.id %}">{{ match.organisation.name }}</a></h2>
+        <p class="description"><b>Description</b><br/>{{ match.description|truncatewords_html:30 }} <a href="{% url 'positions.views.position' match.id %}">More information &gt;&gt;</a></p>
+        
+      </div>
+      <hr/>
+    {% empty %}
+      <p>Sorry, we couldn't find any suitable positions for you this time. Please check again soon!</p>
+    {% endfor %}
+    <br class="clear"/>
+  </div>
+
+
+  <h2>Can't see anything you fancy?</h2>
+  <p>You can also look at the <a href="{% url 'positions-list-all' %}">full list of all current opportunities</a> and the <a href="{% url 'positions.views.organisations' %}">full list of advertising organisations</a>.
+  
+{% endblock %}

@@ -1,0 +1,528 @@
+{% extends 'layout/master.html' %}
+
+{% load url from future %}
+
+
+{% load humanize %}
+
+{% block extrajavascript %}
+
+<script type="text/javascript">
+
+$(function(){
+    // Whenever an actionform is submitted...
+    $(".actionform").submit(function() {
+        var target = $(this);
+        var data = target.serializeArray();
+        console.log(data);
+        
+        $.post("/actions/do", data, function(data) {
+            console.log(data);
+            target.html("<div class='result'>"+data.result+"</div>");
+        }, 'json');
+        
+        
+        return false;
+    });
+    console.log("Action form handler installed.");
+
+    // Whenever a radio button is clicked...
+    $("input.action").change(function(){
+        parts = this.id.split("_");
+        parts.shift(); // Discard "action".
+        var action_id = parts.shift();
+        var action_name = parts.join("_");
+        console.log(action_id);
+        console.log(action_name);
+
+        var d = {
+            'reason': $("#action_"+action_id+"_reason"),
+            'reasontextarea': $("#action_"+action_id+"_reason textarea"),
+            'reasonreason': $("#action_"+action_id+"_reasonreason"),
+            'reasonreasontext': $("#action_"+action_id+"_"+action_name+"_reason").val(),
+            'button': $("#action_"+action_id+"_submit"),
+            'buttontext': $("#action_"+action_id+"_"+action_name+"_short").val()
+        };
+
+        console.log(d);
+
+        // Display reason div.
+        d.reason.show();
+        // Put action name into button
+        d.button.val(d.buttontext);
+
+        // If the reasonreasontext is not None, display the textarea with the appropriate message.
+        if (d.reasonreasontext != "None") {
+            d.reasonreason.html(d.reasonreasontext);
+            d.reasonreason.show();
+            d.reasontextarea.show();
+            d.reason.show();
+        } else {
+            // Hide the reason textarea, and clear its value.
+            d.reasonreason.hide();
+            d.reasontextarea.val("");
+            d.reasontextarea.hide();
+        }
+
+
+    });
+    
+});
+
+</script>
+    
+{% endblock %}
+
+{% block content %}
+
+  <div class="css_left">
+
+    <table class="swish">
+      {% if user.is_authenticated %}
+
+        {% if user.get_profile.is_volunteer %}
+          <tr class="section"><th>Volunteering</th></tr>
+          {% if user.get_profile.volunteerprofile %}
+            <tr>
+              <td class="button">
+                <a class="icon profile" href="{% url 'profiles.views.update' %}">Update my profile</a>
+              </td>
+            </tr>
+            {% if features.availability %}
+              <tr>
+                <td class="button">
+                  <a class="icon opportunities" href="{% url 'positions.views.match' %}">Match me to an opportunity</a>
+                </td>
+              </tr>
+            {% endif %}
+            <tr>
+              <td class="button">
+                <a class="icon cv" href="{% url 'profiles.views.profile' user.id %}">View my volunteering CV</a>
+              </td>
+            </tr>
+            <tr>
+              <td class="button">
+                <a class="icon cv" href="{% url 'hours.views.volunteer_hours' user.id %}">Record my hours</a>
+              </td>
+            </tr>
+            <tr>
+              <td class="button">
+                <a class="icon applications" href="{% url 'profiles.views.offers' user.id %}">View my applications</a>
+              </td>
+            </tr>
+            <tr>
+              <td class="button">
+                <a class="icon email" href="{% url 'profiles.views.communication' %}">Communication settings</a>
+              </td>
+            </tr>
+            {% if features.volunteer_blogs and user.get_profile.is_volunteer %}
+              <tr>
+                <td class="button">
+                  <a class="icon person" href="{% url 'blogs.views.blogadmin' %}">Manage my blog</a>
+                </td>
+              </tr>
+            {% endif %}
+          {% else %}
+            <tr>
+              <td class="button">
+                <a class="icon profile" href="{% url 'profiles.views.update' %}">Create my profile</a>
+              </td>
+            </tr>
+          {% endif %}
+        {% endif %}
+        
+        {% if user.get_profile.representativeprofile %}
+          <tr class="section"><th>Recruitment</th></tr>
+          <tr>
+            <td class="button">
+              <a class="icon org_edit" href="{% url 'profiles.views.update' %}">Update my organisation profile</a>
+            </td>
+          </tr>
+          <tr>
+            <td class="button">
+              <a class="icon opp_new" href="{% url 'positions.views.new' %}">Add an opportunity advert</a>
+            </td>
+          </tr>
+          <tr>
+            <td class="button">
+              <a class="icon opp_list" href="{% url 'positions.views.organisation' user.get_profile.representativeprofile.organisation.id %}">View my adverts</a>
+            </td>
+          </tr>
+          <tr>
+            <td class="button">
+              <a class="icon group" href="{% url 'hours.views.organisation_volunteers' user.get_profile.representativeprofile.organisation.id %}">View my volunteers</a>
+            </td>
+          </tr>
+          <tr>
+            <td class="button">
+              <a class="icon applications" href="{% url 'offers.views.representative_offers' %}">View recent referrals</a>
+            </td>
+          </tr>
+          {% if features.organisation_blogs %}
+            <tr>
+              <td class="button">
+                <a class="icon person" href="{% url 'blogs.views.blogadmin' %}">Manage my blog</a>
+              </td>
+            </tr>
+          {% endif %}
+          {% if features.organisation_mailouts %}
+          <tr>
+            <td class="button">
+              <a class="icon email_add" href="{% url 'volunteers-list-action-mailout' user.get_profile.representativeprofile.organisation.id %}">Create new volunteer mailout</a>
+            </td>
+          </tr>
+          <tr>
+            <td class="button">
+              <a class="icon email" href="{% url 'mailouts-list-all' user.get_profile.representativeprofile.organisation.id %}">Mailouts list</a>
+            </td>
+          </tr>
+        {% endif %}
+
+        {% endif %}
+                
+      {% else %}
+        <tr class="section"><th>Welcome to {{ FRIENDLY_NAME }}</th></tr>
+        <tr>
+          <td class="button">
+            <a class="icon pencil" href="{% url 'registration.views.register' %}">Sign up and start volunteering</a>
+            <a class="icon pencil" href="{% url 'registration.views.register' %}">Register your organisation and advertise opportunities</a>
+          </td>
+        </tr>
+      {% endif %}
+    </table>
+  
+    {% if user.is_staff %}
+    
+      <table class="swish">
+        <tr><th>Staff Functions</th></tr>
+        <tr>
+          <td class="button">
+            <a class="icon group" href="{% url 'volunteers-list-all' %}">Volunteer list</a>
+          </td>
+        </tr>
+        <tr>
+          <td class="button">
+            <a class="icon representative" href="{% url 'representatives-list-all' %}">Representative list</a>
+          </td>
+        </tr>
+        <tr>
+          <td class="button">
+            <a class="icon opp_list" href="{% url 'positions-list-all' %}">
+            Opportunity list</a>
+          </td>
+        </tr>
+        <tr>
+          <td class="button">
+            <a class="icon organisation" href="{% url 'positions.views.organisations' %}">Organisation list</a>
+          </td>
+        </tr>
+        <tr>
+          <td class="button">
+            <a class="icon applications" href="{% url 'offers.views.recent' %}">Recent applications</a>
+          </td>
+        </tr>
+        <tr>
+          <td class="button">
+            <a class="icon user_delete" href="{% url 'profiles.views.bulk_deactivate' %}">Deactivate students</a>
+          </td>
+        </tr>
+        {% if features.site_blog and user.is_staff %}
+          <tr>
+            <td class="button">
+              <a class="icon person" href="{% url 'blogs.views.blogadmin' %}">Manage site blog</a>
+            </td>
+          </tr>
+        {% endif %}
+        {% if features.mailouts %}
+          <tr>
+            <td class="button">
+              <a class="icon email_add" href="{% url 'volunteers-list-action-mailout' '' %}">Create new volunteer mailout</a>
+            </td>
+          </tr>
+          <tr>
+            <td class="button">
+              <a class="icon email_add" href="{% url 'representatives-list-action-mailout' %}">Create new representative mailout</a>
+            </td>
+          </tr>
+          <tr>
+            <td class="button">
+              <a class="icon email" href="{% url 'mailouts-list-all' '' %}">Mailouts list</a>
+            </td>
+          </tr>
+        {% endif %}
+
+      </table>
+
+      <table class="swish">
+        <tr class="section"><th>Reports</th></tr>
+
+        <tr>
+          <td class="button">
+            <a class="icon report" href="{% url 'marketing-report-all' %}">
+              Marketing report</a>
+          </td>
+        </tr>
+        <tr>
+          <td class="button">
+            <a class="icon report" href="{% url 'reports.views.sla_check' %}">SLA report</a>
+          </td>
+        </tr>
+        <tr>
+          <td class="button">
+            <a class="icon report" href="{% url 'reports.views.inactive_volunteers' %}">Inactive volunteer report</a>
+          </td>
+        </tr>
+        <tr>
+          <td class="button">
+            <a class="icon report" href="{% url 'user-breakdown' %}">
+              Volunteer breakdown</a>
+          </td>
+        </tr>
+        {% if features.award %}
+        <tr>
+          <td class="button">
+            <a class="icon report" href="{% url 'reports.views.awards' %}">
+              Awards Report</a>
+          </td>
+        </tr>
+        {% endif %}
+
+      </table>  
+
+      <table class="swish">
+        <tr class="section"><th>Activity report</th></tr>
+        <tr>
+          <td>
+            <form method="GET" action="{% url 'reports.views.activity' %}">
+              {% csrf_token %}
+              <div class="label">Start date <span class="tinyhint">Report will start at midnight on this day</span>
+              </div>
+              {{ dform.date_start }}
+              <div class="label">End date <span class="tinyhint">Report will end at 23:59:59 on this day</span>
+              </div>
+              {{ dform.date_end }}
+              <div style="margin-top: 10px;">
+                <input type="submit" value="Generate activity report"/>
+              </div>
+            </form>
+          </td>
+        </tr>
+      </table>
+
+      <table class="swish">
+        <tr class="section"><th>Time records report</th></tr>
+        <tr>
+          <td>
+            <form method="GET" action="{% url 'reports.views.time_records' %}">
+              {% csrf_token %}
+              <div class="label">Start date <span class="tinyhint">Report will start at midnight on this day</span>
+              </div>
+              {{ dform.date_start }}
+              <div class="label">End date <span class="tinyhint">Report will end at 23:59:59 on this day</span>
+              </div>
+              {{ dform.date_end }}
+              <div style="margin-top: 10px;">
+                <input type="submit" value="Generate time records report"/>
+              </div>
+            </form>
+          </td>
+        </tr>
+      </table>
+      
+    
+    {% endif %}
+  
+    <table class="swish">
+      <tr class="section"><th>Search for an opportunity</th></tr>
+      <tr>
+        <td>
+          <form onsubmit="document.location.href = '/positions/#' + escape($('#search_term').val()); return false">
+            <input id="search_term"/> <input type="submit" value="Search"/>
+            <p style="margin: 5px 0 0 0; font-size: 0.85em;">eg. "animals", "fundraising", "shelter"</p>
+          </form>
+        </td>
+      </tr>
+    </table>
+  </div>
+  
+  <div style="float: left; width: 600px; padding-left: 20px;">
+
+    {# Show information to representatives that haven't been approved yet. #}
+    {% if user.get_profile.is_representative and not user.get_profile.representativeprofile %}
+      <div id="messages" class="message">Thanks for registering as a representative. Your account has not yet been approved by the Volunteering staff. This usually takes no more than one working day.</div>
+    {% endif %}
+
+    {% if upcoming_positions and features.upcoming_positions %}
+      
+      <h1 style="margin-bottom: 0px;">Coming up</h1>
+      {% for position in upcoming_positions %}
+
+        <a class="miniposition" href="{{ position.get_absolute_url }}">
+          <div class="step clickable">
+            <div class="date">
+              {% if position.closeness %}
+                <span class="close_date">{{ position.closeness }}</span>
+              {% else %}
+                {{ position.date_start }}
+              {% endif %}
+            </div>
+            <div class="org">{{ position.organisation }}</div>
+            <div class="position">{{ position.name }}</div>
+            <div class="description">{{ position.summary }}</div>
+          </div>
+        </a>
+
+      {% endfor %}
+      <br class="clear"/>
+
+      <p style="text-align: right;">
+        <a href="{% url 'positions-calendar' %}">See all upcoming opportunities &gt;&gt;</a>
+      </p>
+
+    {% endif %}
+
+    <h1 style="margin-bottom: 0px;">New This Week</h1>
+    {% for position in newest_positions %}
+    
+      <a class="miniposition" href="{{ position.get_absolute_url }}">
+        <div class="step clickable">
+          <div class="org">{{ position.organisation }}</div>
+          <div class="position">{{ position.name }}</div>
+          <div class="description">{{ position.summary }}</div>
+        </div>
+      </a>
+
+    {% endfor %}
+    <br class="clear"/>
+
+    {% if user.get_profile.offers_offered or user.get_profile.is_representative or user.is_staff %}
+      {# Don't show tutorial #}
+    {% else %}
+
+      {% include 'pages/how_does_it_work.html' %}
+
+      <br class="clear"/>
+
+    {% endif %}
+
+    {% if features.site_blog %}
+
+      <h1 style="margin-bottom: 0px;">{{ FRIENDLY_NAME }} News</h1>
+
+      {% for blog in blogs %}
+        <div class="step">
+          <div class="org">{{ blog.published|naturaltime }}</div>
+          <div class="position">{{ blog.title }}</div>
+          <div class="description">{{ blog.body|striptags|truncatewords:20 }}</div>
+          <a href="{{ blog.get_absolute_url }}">Read more &gt;&gt;</a>
+        </div>
+      {% empty %}
+
+        <div>There's no recent news from the {{ FRIENDLY_NAME }} team. Check back soon!</div>
+
+      {% endfor %}
+
+      <br class="clear"/>
+
+    {% endif %}
+
+    {% if not user.is_authenticated %}
+      <h2>Not ready to sign up? Browse for opportunities now</h2>
+      <ul>
+        <li><a href="{% url 'positions-list-all' %}">See a list of all current opportunities</a></li>
+      </ul>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+      <h2>What's new?</h2>
+      
+      {% if unconfirmed_hours %}
+        <a class="alertbox" href="{% url 'hours.views.review' %}">
+          Your volunteers have submitted {{ unconfirmed_hours|length }} time record{{ unconfirmed_hours|length|pluralize }} that you should review. Click here to review {{ unconfirmed_hours|length|pluralize:"it,them" }} now.
+        </a>
+      {% endif %}
+
+      <ul>
+        {% for action in actions %}
+          <li class="pendingaction">
+            <div class="message">{{ action.message }}</div>
+
+            {% ifequal action.kind "offer" %}
+              <table class="offer summary">
+                <tr><td class="label">Volunteer</td><td><a class="entity volunteer"
+                  href="{% url 'profiles.views.profile' action.subject.volunteer.id %}">
+                  {{ action.subject.volunteer.get_full_name }}</a></td></tr>
+                <tr><td class="label">Organisation</td><td><a class="entity organisation"
+                  href="{% url 'positions.views.organisation' action.subject.position.organisation.id %}">
+                  {{ action.subject.position.organisation }}</a></td></tr>
+                <tr><td class="label">Position</td><td><a class="entity position"
+                  href="{% url 'positions.views.position' action.subject.position.id %}">
+                  {{ action.subject.position.name }}</a></td></tr>
+                <tr><td class="label"></td><td><a
+                  href="{% url 'offers.views.offer' action.subject.id %}">
+                  View application details &gt;&gt;</a></td></tr>
+
+                </table>
+            {% endifequal %}
+
+            {% ifequal action.kind "position" %}
+              <table class="position summary">
+                <tr><td class="label">Organisation</td><td><a class="entity organisation"
+                  href="{% url 'positions.views.organisation' action.subject.organisation.id %}">
+                  {{ action.subject.organisation }}</a></td></tr>
+                <tr><td class="label">Position</td><td><a class="entity position"
+                  href="{% url 'positions.views.position' action.subject.id %}">
+                  {{ action.subject.name }}</a></td></tr>
+              </table>
+            {% endifequal %}
+
+            {% ifequal action.kind "baseprofile" %}
+              <table class="position summary">
+                <tr><td class="label">Name</td><td>
+                  {{ action.subject.user.get_full_name }}</td></tr>
+                <tr><td class="label">Organisation</td><td>
+                  {{ action.subject.user.registrationprofile_set.get.organisation }}</td></tr>
+                <tr><td class="label"></td><td>
+                  <a href="{% url 'profiles.views.approve' action.subject.user.id %}">Approve this representative &gt;&gt;</a></td></tr>
+              </table>
+            {% endifequal %}
+            
+            {% if action.kind == "offer" or action.kind == "position" %}
+              <form class="actionform" method="post" action="{% url 'actions.views.do' %}" id="action_{{ forloop.counter }}">
+                {% csrf_token %}
+                <input type="hidden" name="subject_id" value="{{ action.subject.id }}"/>
+                <input type="hidden" name="kind" value="{{ action.kind }}"/>
+                {% for action_action in action.actions %}
+                  <input type="hidden" id="action_{{ forloop.parentloop.counter }}_{{ action_action.name }}_reason" value="{{ action_action.reason_reason }}"/>
+                  <input type="hidden" id="action_{{ forloop.parentloop.counter }}_{{ action_action.name }}_short" value="{{ action_action.short_action }}"/>
+                  <label for="action_{{ forloop.parentloop.counter }}_{{ action_action.name }}">
+                    <input class="action" type="radio" name="action" value="{{ action_action.name }}"
+                          id="action_{{ forloop.parentloop.counter }}_{{ action_action.name }}">
+                    {{ action_action.option_text }}
+                  </label>
+                {% endfor %}
+                <div id="action_{{ forloop.counter }}_reason" class="reason">
+                  <p id="action_{{ forloop.counter }}_reasonreason" class="reasonreason"></p>
+                  <textarea name="reason"></textarea><br/>
+                  <input id="action_{{ forloop.counter }}_submit" type="submit" value="Do it."/>
+                </div>
+              </form>
+            {% endif %}
+          </li>
+        {% empty %}
+          <li>There's nothing new requiring your attention right now.</li>
+        {% endfor %}
+      </ul>
+      
+      <h2>Browse for opportunities</h2>
+      <ul>
+        <li><a href="{% url 'positions.views.organisations' %}">See a list of organisations</a></li>
+        <li><a href="{% url 'positions-list-all' %}">See a list of all current opportunities</a></li>
+      </ul>
+    {% endif %}
+    
+    <br class="clear"/>
+  </div>
+    
+{% endblock %}
+

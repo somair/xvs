@@ -1,0 +1,26 @@
+{% extends 'blog/base.html' %}
+
+{% load url from future %}
+
+
+{% block title %}Blog Entry{% endblock %}
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'positions.views.new' %}">New Blog Entry</a>
+{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 5px;">{{ FRIENDLY_NAME }} {% if user.is_staff %}Blog{% else %}Blogs{% endif %}</h1>
+  <hr style="color: #888888; border: 1px solid #888888; margin-top: 1px; margin-bottom: 20px;"/>
+
+{% if form.errors %}
+    <p style="color:red; padding-left: 25px;">Please correct the error{{ form.errors|pluralize }} below</p>
+{% endif %}
+	<form method="post" action="">
+		{% csrf_token %}
+		<table>
+        	{{ form.as_table }}
+        	<tr><td></td><td><input type="submit" value="Save" /></td></tr>
+    	</table>
+	</form>
+{% endblock %}

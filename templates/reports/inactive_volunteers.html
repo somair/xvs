@@ -1,0 +1,47 @@
+{% extends 'layout/master.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'reports.views.inactive_volunteers' %}">Inactive Volunteers Report</a>
+{% endblock %}
+
+{% block content %}
+
+  <h2>Inactive Volunteers Report</h2>
+
+  <p>This report shows all volunteers who have registered but neither expressed an interest in a position, nor agreed to a position recommended by staff.</p>
+
+  <p>There are {{ volunteers.count }} volunteers in this report.</p>
+
+  <table id="volunteer_table" class="data">
+    <thead>
+      <tr>
+        <th>Volunteer</th>
+        <th>Registered</th>
+        <th>Account age</th>
+        <th>Recommendations received</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for volunteer in volunteers %}
+        <tr>
+          <td><a href="{% url 'profiles.views.profile' volunteer.id %}" class="entity volunteer">{{ volunteer.get_full_name }}</a></td>
+          <td>
+            {{ volunteer.date_joined }}
+          </td>
+          <td>
+            {{ volunteer.age }} days
+          </td>
+          <td>
+            {{ volunteer.received_offer_count }}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  
+    
+{% endblock %}

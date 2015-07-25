@@ -1,0 +1,18 @@
+{% extends 'blog/base.html' %}
+
+{% block extracss %}
+
+{% endblock extracss %}
+
+{% if pageview %}
+	{% block title %}{{ pageview.page_name }}{% endblock %}
+{% endif %}
+
+{% block content %}
+	<h1>The following users have posted blogs:</h1>
+
+	{% for blogger in bloggers %} 
+				<h5 style="margin-bottom:2px; padding-left: 100px"><a href="/blogs/{{ blogger.id }}">{{ blogger.get_full_name }}</a></h5>
+	{% endfor %}
+
+{% endblock %}

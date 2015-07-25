@@ -1,0 +1,14 @@
+{% extends 'layout/message.html' %}
+
+{% load url from future %}
+
+
+{% block message %}
+  {% if form.errors %}
+    Sorry, your username or password is incorrect. Please try again.<br/>
+    Do you need to <a href="{% url 'django.contrib.auth.views.password_reset' %}">reset your password</a>?
+  {% else %}
+    Sorry, you'll need to log in to visit this page.<br/> If you haven't registered yet, how about <a href="{% url 'registration.views.register' %}">registering now</a>?
+  {% endif %}
+{% endblock %}
+

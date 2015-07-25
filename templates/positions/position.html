@@ -1,0 +1,337 @@
+{% extends 'positions/all.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'positions.views.position' position.id %}">{{ position.organisation.name }}: {{ position.name }}</a>
+{% endblock %}
+
+{% block extrajavascript %}
+    
+  {% if features.position_map and position.latlong %}
+    {% include 'google-maps-script.html' %}
+    <script type="text/javascript">
+      $(function(){
+        console.log("Drawing map");
+
+        var map_center = new google.maps.LatLng({{ position.latlong }});
+
+        // Map
+        var myOptions = {
+          center: map_center,
+          zoom: 12,
+          mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+
+        var map = new google.maps.Map(document.getElementById("mapcontainer"), myOptions);
+
+        var marker = new google.maps.Marker({
+          position: map_center,
+          map: map
+        });
+
+      });
+    </script>
+  {% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+  <h2 style="margin-bottom: 0px;">
+    {{ position.name }} at 
+    <a href="{% url 'positions.views.organisation' position.organisation.id %}" class="entity organisation">{{ position.organisation.name }}</a>
+    {% if user.is_staff %}
+      <a class="editlink" href="{% url 'admin:positions_position_change' position.id %}">Edit in Admin</a>
+    {% endif %}
+  </h2>
+  <h3 style="margin-top: 0px; font-weight: normal;">{{ position.summary }}</h3>
+
+  {% if position.oneoff %}
+    <table class="data cols">
+      {% ifequal position.date_start position.date_end %}
+        <tr><th>Date</th>
+          <td>
+            {{ position.date_start }} 
+            {% if position.hour_count %}({{ position.hour_count }} hour{{ position.hour_count|pluralize }}){% endif %}
+          </td>
+        </tr>
+      {% else %}
+        <tr><th>Dates</th>
+          <td>
+            {{ position.date_start }} - {{ position.date_end }}
+            {% if position.hour_count %}({{ position.hour_count }} hour{{ position.hour_count|pluralize }}){% endif %}
+          </td>
+        </tr>
+      {% endifequal %}
+    </table>
+  {% else %}
+    {% if features.availability %}
+      <p>{{ position.hours.render|safe }}</p>
+    {% endif %}
+  {% endif %}
+
+  <table class="data cols">
+    {% if not position.oneoff and position.hour_count %}
+      <tr><th>Hours per week</th>
+        <td>
+          {{ position.hour_count }} hour{{ position.hour_count|pluralize }}
+        </td>
+      </tr>
+    {% endif %}
+    
+    {% if not features.position_map %}
+      <tr><th>Location</th>
+        <td>
+          {{ position.location }}
+        </td>
+      </tr>
+    {% endif %}
+
+    {% if features.categories %}
+      <tr><th>Categories</th><td>
+        {{ position.category.all|join:", "|default:"None" }}
+      </td></tr>
+    {% endif %}
+
+    <tr><th>Description</th>
+      <td>
+        <p>{{ position.description|urlize|linebreaksbr }}</p>
+        {% if position.skills_gained.count %}
+          <p>This opportunity will assist you in gaining the following skills:</p>
+          <ul>
+            {% for skill in position.skills_gained.all %}
+              <li>{{ skill.name }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+        {% if position.training_provided %}
+          <p><b>Training will be provided by the organisation for this position:</b></p>
+	  <p>{{ position.training_details|urlize|linebreaksbr }}</p>
+        {% endif %}
+        {% if position.travel_expenses != None %}
+          <p><b>{{ position.get_travel_expenses_display }}</b></p>
+        {% endif %}
+      </td>
+    </tr>
+
+    {% if features.position_map %}
+      <tr><th>Location</th>
+        <td>
+          {{ position.location }}
+
+          {% if position.latlong %}
+            <div id="mapcontainer" style="margin-top: 10px;"></div>
+          {% endif %}
+        </td>
+      </tr>
+    {% endif %}
+
+    <tr><th>About you</th>
+      <td>
+        <p>The organisation has indicated the following requirements from volunteers who want to take this opportunity.</p>
+        <p><b>Essential</b>: {{ position.spec_essential }}</p>
+        <p><b>Desirable</b>: {{ position.spec_desirable }}</p>
+      </td>
+    </tr>
+    {% if features.position_number_of_volunteers %}
+      <tr><th>Number of volunteers</th>
+        <td>
+          {{ position.number_of_volunteers }}
+        </td>
+      </tr>
+    {% endif %}
+  </table>
+
+  {% if user.is_staff %}
+    <table class="data cols">
+      <tr><th>Completed applications</th>
+        <td>
+          {% with position.offers_completed as offers %}
+            <p>{{ offers|length }} completed application{{ offers|length|pluralize }}
+            <ul class="cv">
+              {% for offer in offers %}
+                <li>
+                  {{ offer.time_confirmed_started|date:"j M Y" }}<br/>
+                  <a href="{% url 'profiles.views.profile' offer.volunteer.id %}" class="entity volunteer">{{ offer.volunteer.get_full_name }}</a><br/>
+                  <a href="{% url 'offers.views.offer' offer.id %}">View application details &gt;&gt;</a>
+		  {% if user.is_staff %}
+		    <a class="editlink" href="{% url 'admin:offers_offer_change' offer.id %}">Edit in Admin</a>
+		  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          {% endwith %}
+        </td>
+      </tr>
+    
+      <tr><th>Pending applications</th>
+        <td>
+          {% with position.offers_in_progress_volunteer_offered as offers %}
+            <p>{{ offers|length }} pending application{{ offers|length|pluralize }}
+            <ul class="cv">
+              {% for offer in offers %}
+                <li>
+                  {% if offer.time_volunteer_accepted %}
+                    {{ offer.time_volunteer_accepted|date:"j M Y" }}<br/>
+                  {% else %}
+                    {{ offer.time_staff_accepted|date:"j M Y" }}<br/>
+                  {% endif %}
+                  <a href="{% url 'profiles.views.profile' offer.volunteer.id %}" class="entity volunteer">{{ offer.volunteer.get_full_name }}</a><br/>
+                  <a href="{% url 'offers.views.offer' offer.id %}">View application details &gt;&gt;</a>
+                  {% if user.is_staff %}
+                    <a class="editlink" href="{% url 'admin:offers_offer_change' offer.id %}">Edit in Admin</a>
+                  {% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          {% endwith %}
+        </td>
+      </tr>
+    </table>
+  {% endif %}
+
+
+  {# Check to see if actioning on this position is allowed. #}
+  {% if position.approved and position.active %}
+
+    {% if user.get_profile.is_volunteer %}
+    <table class="swish right">
+      <tr><th>
+        <h4>Interested?</h4>
+      </th></tr>
+      <tr><td>
+
+        {% if user in position.pending_offerers or user in position.successful_offerers %}
+          <p>You've already applied or been recommended for this position!</p>
+        {% else %}
+          {% if features.reference_file and not user.get_profile.try_get_volunteer_profile.referencefile %}
+
+            <p>You must upload a reference file before you can apply for positions. <a style="display: inline; text-decoration: underline;" href="{% url 'profiles.views.update' %}">Upload your reference file on your profile page now.</a></p>
+
+          {% else %}
+
+            {% if user.get_profile.try_get_volunteer_profile %}
+              <form method="post" action="{% url 'positions.views.apply' position.id %}">
+                {% csrf_token %}
+
+                {% if features.cover_letter %}
+                  <p>Introduce yourself in the box below. Say a bit about why you've applied, and why you'd be good for the position.</p>
+                  <div class="reasonfield">
+                    <textarea name="reason"></textarea>
+                  </div>
+                  <p>Your contact details will be shared with the organisation.</p>
+                {% else %}
+                  <p>Click below to share your contact details with the organisation, and they'll be in touch soon.</p>
+                {% endif %}
+                <input type="submit" value="Apply Now"/>
+              </form>
+            {% else %}
+              <p>You need to create a volunteer profile describing yourself before you can share your contact details with this organisation.</p>
+              <p><a href="{% url 'profiles.views.update' %}">Create your profile now</a></p>
+            {% endif %}          
+
+          {% endif %}
+
+        {% endif %}
+
+      </td></tr>
+    </table>
+    {% endif %}
+
+    {% if user.is_staff %}
+    <table class="swish right">
+      <tr><th>
+        <h4>Recommend</h4>
+      </th></tr>
+      <tr><td>
+        <p><a href="{% url 'volunteers-list-action-recommend' position.id %}">Click to recommend this position &gt;&gt;</a></p>
+      </td></tr>
+    </table>
+    {% endif %}
+
+    {% if user.get_profile.representativeprofile.organisation == position.organisation or user.is_staff %}
+    <table class="swish right">
+      <tr><th>
+        <h4>This position is being advertised</h4>
+      </th><tr>
+      <tr><td>
+        <p>You can de-list this position to prevent people from applying for it. You can re-list the position later without waiting for approval.</p>
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="active" value="False"/>
+          <input type="submit" value="De-list this position"/>
+          <br/><br/>
+        </form>
+        <p>You can also edit the position. <b>If you edit the position it will be delisted and must be re-approved before it will be listed again.</b></p>
+        <input type="button" onclick="window.location='{% url 'positions.views.edit' position.id %}'" value="Edit position"/>
+        {% if user.get_profile.representativeprofile.organisation == position.organisation %}
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="copy" value="True"/>
+          <input type="submit" value="Create a new position by copying this one"/>
+        </form>
+        {% endif %}
+      </td></tr>
+    </table>
+    {% endif %}
+
+    {% if user.is_anonymous %}
+     <table class="swish right">
+       <tr><th><h4>Interested?</h4></th></tr>
+       <tr><td>
+         <p>Submit your info to this organisation today.</p>
+         <p><a href="/accounts/register/">Register now!</a></p>
+       </td></tr>
+     </table>
+    {% endif %}
+
+  {% else %}
+    {# Either not approved, or advert is withdrawn. #}
+
+    {% if not position.approved %}
+      <table class="swish right">
+        <tr><th>
+          <h4>Pending</h4>
+        </th><tr>
+        <tr><td>
+          <p>This position has not yet been approved by volunteering staff.</p>
+
+	  {% ifequal user.get_profile.representativeprofile.organisation position.organisation %}
+        <input type="button" onclick="window.location='{% url 'positions.views.edit' position.id %}'" value="Edit position"/>
+	  {% endifequal %}
+	  
+        </td></tr>
+      </table>
+    {% endif %}
+
+    {% if not position.active %}
+      <table class="swish right">
+        <tr><th>
+          <h4>Withdrawn</h4>
+        </th><tr>
+        <tr><td>
+          <p>This position has been withdrawn by the organisation.</p>
+          {% if user.get_profile.representativeprofile.organisation == position.organisation or user.is_staff %}
+            <form method="post">
+              {% csrf_token %}
+              <input type="hidden" name="active" value="True"/>
+              <input type="submit" value="Re-list this position"/>
+            </form>
+            {% if user.get_profile.representativeprofile.organisation == position.organisation %}
+            <form method="post">
+              {% csrf_token %}
+              <input type="hidden" name="copy" value="True"/>
+              <input type="submit" value="Create a new position by copying this one"/>
+            </form>
+            {% endif %}
+          {% endif %}
+        </td></tr>
+      </table>
+        
+    {% endif %}
+  {% endif %}
+        
+{% endblock %}

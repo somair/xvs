@@ -1,0 +1,146 @@
+{% extends 'layout/master.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'profiles.views.volunteers' %}">Volunteers</a>
+{% endblock %}
+
+{% block extracss %}
+  <link rel="stylesheet" href="//cdn.datatables.net/1.10.0/css/jquery.dataTables.css" type="text/css"/>
+{% endblock %}
+
+{% block extrajavascript %}
+  <script type="text/javascript" src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
+  <script type="text/javascript" src="{{ MEDIA_URL }}js/tables.js"></script>
+  <script type="text/javascript" charset="utf-8">
+
+    $(function(){
+      set_up_table("volunteer", {});
+
+      {% if action %}
+        make_selectable();
+      {% endif %}
+    });
+
+   </script>
+{% endblock %}
+
+{% block content %}
+
+  <h2>
+    <a href="?{{ request.META.QUERY_STRING }}&amp;export=xls" class="rbutton icon excel">Export as XLS</a>
+    <div class="filter">
+      <label>Showing...</label>
+      <a href="{% url 'volunteers-list-all' %}" {% if filter == 'all' %}class='selected'{% endif %}>all volunteers</a>
+      <a href="{% url 'volunteers-list-inactive' %}" {% if filter == 'inactive' %}class='selected'{% endif %}>only inactive volunteers</a>
+      <a href="{% url 'volunteers-list-uncommitted' %}" {% if filter == 'uncommitted' %}class='selected'{% endif %}>only unaccepted volunteers</a>
+      <a href="{% url 'volunteers-list-deactivated' %}" {% if filter == 'deactivated' %}class='selected'{% endif %}>deactivated volunteers</a>
+    </div>
+    Volunteers
+  </h2>
+
+  {% if action %}
+    <div class="setfilter" style="padding-bottom: 15px;">
+      <div class="section intro" style="height: auto;">
+        <div style="font-size: 1.6em;">
+          {% if action == "recommend" %}
+            Recommending <a href="{{ position.get_absolute_url }}" class="entity position">{{ position }}</a>
+          {% elif action == "mailout" %}
+            Creating a new volunteer mailout{% if organisation %} for {{ organisation }}{% endif %}
+          {% endif %}
+        </div>
+        <div style="font-weight: normal;">
+          {% if action == "recommend" %}
+            Select the volunteers that you would like to receive a recommendation for this position.
+          {% elif action == "mailout" %}
+            Select the volunteers that you would like to create a new mailout for.
+          {% endif %}
+          <a href="#" onclick="select_visible(); return false;">(Select visible)</a> 
+          <a href="#" onclick="select_all(); return false;">(Select all)</a> 
+          <a href="#" onclick="select_none(); return false;">(Select none)</a>
+        </div>
+        <form id="action_form" method="post" onsubmit="set_ids(); return true;">
+          {% csrf_token %}
+          <input id="action_ids" name="action_ids" value="" type="hidden"/>
+          <input id="action_button" type="submit" value="Perform this action with 0 volunteers"/> 
+        </form>
+      </div>
+    </div>
+  {% endif %}
+
+  <form method="get">
+
+    <div class="setfilter" style="height: 140px;">
+      <div class="section intro">Filter:</div>
+      <div class="section choices">{{ tform.postgrad }}</div>
+      <div class="section choices">{{ tform.international }}</div>
+      <div class="section choices">
+        Match courses<br/>that contain:<br/>
+	<style>
+	  #id_course { width: 140px; }
+	  #id_faculty { width: 140px; }
+	</style>
+        {{ tform.course }}<br/>
+        in faculty:<br/>
+        {{ tform.faculty }}
+      </div>
+      <div class="section choices">
+        Show volunteers who:<br/>{{ tform.hours }}<br/>
+        graduating in:<br/>{{ tform.year }}<br/>
+        {% if features.categories %}
+          interested in:<br/>{{ tform.category }}<br/>
+        {% endif %}
+      </div>
+
+
+    </div>
+
+
+    <div class="setfilter" style="height: 40px;">
+      <div class="section intro">Columns:</div>
+      <div class="section choices grid">{{ cform.columns }}</div>
+    </div>
+
+    <div style="text-align: left; padding-bottom: 20px;">
+      <input type="submit" value="Update"/>
+    </div>
+
+  </form>
+
+  <table id="volunteer_table" class="display">
+    <thead>
+      <tr>
+        <th>Volunteer</th>
+        {% if features.student_id %}<th>Student ID</th>{% endif %}
+
+        {% if "course"        in columns %}<th>Course</th>{% endif %}
+        {% if "registered"    in columns %}<th>Registered</th>{% endif %}
+        {% if "grad_year"     in columns %}<th>Grad. year</th>{% endif %}
+        {% if "offers"        in columns %}<th>Offers</th>{% endif %}
+        {% if "last_accepted" in columns %}<th>Last accepted</th>{% endif %}
+        {% if "hours_logged"  in columns %}<th>Hours logged</th>{% endif %}
+        {% if features.login_as and user.is_staff and not action %}<th></th>{% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for volunteer in volunteers %}
+        <tr id="v{{ volunteer.id }}">
+          <td><a href="{% url 'profiles.views.profile' volunteer.id %}" class="entity volunteer">{{ volunteer.get_full_name }}</a></td>
+          
+          {% if features.student_id %}<td>{% if volunteer.baseprofile.volunteerprofile.student_id %}{{ volunteer.baseprofile.volunteerprofile.student_id }}{% else %}None{% endif %}</td>{% endif %}
+          {% if "course"        in columns %}<td>{{ volunteer.baseprofile.volunteerprofile.course }}</td>{% endif %}
+          {% if "registered"    in columns %}<td>{{ volunteer.date_joined|date:"j M Y" }}</td>{% endif %}
+          {% if "grad_year"     in columns %}<td>{{ volunteer.baseprofile.volunteerprofile.year }}</td>{% endif %}
+          {% if "offers"        in columns %}<td class="right">{{ volunteer.offers_made__count }}</td>{% endif %}
+          {% if "last_accepted" in columns %}<td>{{ volunteer.last_accepted|date:"j M Y" }}</td>{% endif %}
+          {% if "hours_logged"  in columns %}<td class="right">{{ volunteer.get_profile.total_hours|floatformat:1 }}</td>{% endif %}
+          {% if features.login_as and user.is_staff and not action %}<td><a href="{% url 'login_as_user' volunteer.id %}">Login as</a></td>{% endif %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+    
+{% endblock %}

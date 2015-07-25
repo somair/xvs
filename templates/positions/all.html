@@ -1,0 +1,177 @@
+{% extends 'pages/index.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'positions-list-all' %}">All Opportunities</a>
+{% endblock %}
+
+{% block extracss %}
+  <link rel="stylesheet" href="//cdn.datatables.net/1.10.0/css/jquery.dataTables.css" type="text/css"/>
+{% endblock %}
+
+{% block extrajavascript %}
+  <script type="text/javascript" src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    var volunteer_table;
+    $(function(){
+      volunteer_table = $('#position_table').DataTable({
+          "stateSave": true,
+          "pageLength": 100,
+      		"columns": [
+      		  null,
+        {% if "type"           in columns %}null,{% endif %}
+        {% if "organisation"   in columns %}null,{% endif %}
+        {% if "summary"        in columns %}{ "orderable": false },{% endif %}
+        {% if "created"        in columns %}null,{% endif %}
+            null,
+            null
+      		]
+      	});
+      var searchstring = unescape(self.document.location.hash.substring(1))
+      if (searchstring.length) {
+        volunteer_table.search(searchstring).draw();
+        $("#position_table_filter input").val(searchstring);
+        $("#search_heading").html("Opportunity Search for '"+searchstring+"'")
+      } else {
+        volunteer_table.search("").draw();
+      }
+    });
+  </script>
+{% endblock %}
+
+{% block content %}
+
+  <h2>
+    {% if user.is_staff %}
+      <a href="?{{ request.META.QUERY_STRING }}&amp;export=xls" class="rbutton icon excel">Export as XLS</a>
+      <div class="filter">
+        <label>Showing...</label>
+        <a href="{% url 'positions-list-all' %}" {% if filter == 'all' %}class='selected'{% endif %}>all opportunities</a>
+        <a href="{% url 'positions-list-no-offers' %}" {% if filter == 'no-offers' %}class='selected'{% endif %}>opportunities with no offers</a>
+        <a href="{% url 'positions-list-five-pending' %}" {% if filter == 'five-pending' %}class='selected'{% endif %}>opportunities with five offers pending</a>
+      </div>
+    {% endif %}
+
+    <span id="search_heading">{% if filter == 'all' %}All {% endif %}Opportunities</span></h2>
+
+    <form method="get">
+      <input type="hidden" name="filtered" value="yes"/>
+
+      <style>
+        .setfilter {
+          border-radius: 5px;
+          background-color: #cccccc;
+          display: block;
+          overflow: hidden;
+          margin-bottom: 20px;
+          padding: 0px 20px 0px 20px;
+          height: 80px;
+        }
+
+        .setfilter .section {
+          float: left;
+          padding-top: 10px;
+          padding-right: 40px;
+          height: 80px;
+        }
+
+        .setfilter .section.intro {
+          font-weight: bold;
+        }
+
+        .setfilter .section.choices, .section.submit {
+          border-left: 1px dotted white;
+        }
+
+        .setfilter .section.choices.grid li {
+          float: left;
+          width: 130px;
+        }
+
+        .setfilter .section.submit {
+          padding-left: 20px;
+        }
+
+        .setfilter .section li {
+          list-style: none;
+        }
+
+      </style>
+
+      {% if user.is_staff %}
+      <div class="setfilter">
+        <div class="section intro">Showing opportunities that are</div>
+        <div class="section choices">{{ filter_form.approved }}</div>
+        <div class="section choices">{{ filter_form.listed }}</div>
+        {% if features.organisation_categories %}
+          <div class="section choices">{{ filter_form.categories }}</div>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      {% if features.categories %}
+      <div class="setfilter" style="height: 100px;">
+       <div class="section intro">Filter by Categories:</div>
+       <div class="section choices grid">{{ category_form.category }}</div>
+      </div>
+      {% endif %}
+
+      {% if user.is_staff %}
+      <div class="setfilter" style="height: 40px;">
+        <div class="section intro">Columns:</div>
+        <div class="section choices grid">{{ cform.columns }}</div>
+      </div>
+      {% endif %}
+
+      <div style="text-align: left; padding-bottom: 20px;">
+        <input type="submit" value="Update"/>
+      </div>
+
+    </form>
+
+  <table id="position_table" class="display">
+    <thead>
+      <tr>
+        <th>Opportunity</th>
+        {% if "type"           in columns %}<th>Type</th>{% endif %}
+        {% if "organisation"   in columns %}<th>Organisation</th>{% endif %}
+        {% if "summary"        in columns %}<th>Summary</th>{% endif %}
+        {% if "created"        in columns %}<th style="width: 80px;">Created</th>{% endif %}
+        <th class="hidden">Keywords</th>
+        <th class="hidden">FullDescription</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for position in positions %}
+        <tr>
+          <td><a href="{% url 'positions.views.position' position.id %}" class="entity position">{{ position.name }}</a>
+            {% if not position.approved %}(Awaiting approval){% endif %}
+          </td>
+
+          {% if "type"           in columns %}
+            <td>{{ position.oneoff|yesno:"One-off,Weekly" }}</td>
+          {% endif %}
+
+          {% if "organisation"   in columns %}
+            <td><a href="{% url 'positions.views.organisation' position.organisation.id %}" class="entity organisation">{{ position.organisation.name }}</a></td>
+          {% endif %}
+
+          {% if "summary"        in columns %}
+            <td>{{ position.summary }}</td>
+          {% endif %}
+          
+          {% if "created"        in columns %}
+            <td style="width: 80px;">{{ position.date_created|date:"j M Y" }}</td>
+          {% endif %}
+          
+          <td class="hidden">{{ position.keywords }}</td>
+          <td class="hidden">{{ position.description }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>  
+
+{% endblock %}

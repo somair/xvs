@@ -1,0 +1,499 @@
+{% extends 'layout/master.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'registration.views.register' %}">Registration</a>
+{% endblock %}
+
+{% block extrajavascript %}
+  <script type="text/javascript" src="{{ MEDIA_URL }}js/weekgrid.js"></script>
+  <script type="text/javascript" charset="utf-8">
+      function display_rep_info() {
+          var val = $("#id_reg_type").val();
+          console.log(val);
+          if (val == "volunteer") {
+              $(".rep_only").hide();
+              $(".vol_only").show();
+              $('#id_agree').attr('checked', true);
+              
+          } else {
+              $(".rep_only").show();
+              $(".vol_only").hide();
+              $('#id_agree').attr('checked', false);
+          }
+      }
+
+      $(function(){
+          // Display rep stuff if representative registration.
+          display_rep_info();
+          $("#id_reg_type").change(display_rep_info);
+      });
+  </script>
+{% endblock %}
+
+{% block content %}
+
+<form method="post">
+  {% csrf_token %}
+  
+  <div style="float: right; width: 480px;">
+      
+    {% if form.errors or vpform.errors %}
+    <div id="form-error">
+      <p style="color: red; font-weight: bold;">Your registration could not be completed because of some errors on your form. Please review your form and make corrections as required.</p>
+    </div>
+    {% endif %}
+
+    <table class="swish registrationform">    
+      <tr>
+        <th>Registration type</th>
+        <td>
+          {{ form.reg_type.errors }}
+          {{ form.reg_type }}
+        </td>
+      </tr>
+    </table>
+    
+    <h4>Account</h4>
+
+    <table class="swish registrationform rep_only hidden">
+      <tr>
+        <th>Organisation Name</th>
+        <td>
+          {{ form.organisation.errors }}
+          {{ form.organisation }}
+        </td>
+      </tr>
+    </table>
+	
+    
+    <table class="swish registrationform">
+      <tr>
+        <th>Username</th>
+        <td>
+          {{ form.username.errors }}
+          {{ form.username }}
+        </td>
+      </tr>
+
+      <tr>
+        <th>Email</th>
+        <td>
+          {{ form.email.errors }}
+          {{ form.email }}
+        </td>
+      </tr>
+
+      <tr>
+        <th>Password</th>
+        <td>
+          {{ form.password1.errors }}
+          {{ form.password1 }}
+        </td>
+      </tr>
+
+      <tr>
+        <th>Confirm password</th>
+        <td>
+          {{ form.password2.errors }}
+          {{ form.password2 }}
+        </td>
+      </tr>
+    </table>
+
+    <h4>About You</h4>
+
+    <table class="swish registrationform">
+      <tr>
+        <th>First name</th>
+        <td>
+          {{ form.first_name.errors }}
+          {{ form.first_name }}
+        </td>
+      </tr>
+
+      <tr>
+        <th>Last name</th>
+        <td>
+          {{ form.last_name.errors }}
+          {{ form.last_name }}
+        </td>
+      </tr>
+
+    </table>
+
+    {% if features.departments %}
+
+      <div class="rep_only hidden">
+        <h5>University Department</h5>
+
+        <p>Choose which university department you would like your organisation assigned to.</p>
+
+        <table class="swish registrationform">
+
+          <tr>
+            <th>Department</th>
+            <td>
+              <select id="id_dep" name="dep">
+                {% for department in departments %}
+                  <option value="{{ department.id }}" {% if department.id == dep %}selected{% endif %}>{{ department }}</option>
+                {% endfor %}
+              </select>
+            </td>
+          </tr>
+
+        </table>
+
+      </div>
+
+    {% endif %}
+
+
+    <div class="vol_only">
+      <h5>Course Information</h5>
+    
+      <table class="swish registrationform">
+        <tr>
+          <th>I am a...</th>
+          <td>
+
+            <script type="text/javascript">
+
+              $(function(){
+                $("#id_international").change(function(){
+                  var vtype = $(this).val();
+                  // Go to staff mode if user chose "staff member"
+                  staff_mode(vtype === "S" || vtype === "R");
+                });
+                $("#id_postgrad").change(function(){
+                  // Go to staff mode if user chose "non-student"
+                  var stype = $(this).val();
+                  if (stype === "None") {
+                    staff_mode(true);
+                  }
+                })
+              });
+
+              function staff_mode(staff) {
+                var vtype = $("#id_international").val();
+
+                if (staff) {
+                  // Staff!
+
+                  // If the member type isn't already either
+                  // staff or recent graduate, force it to be staff
+                  if (vtype === "S" || vtype === "R") {
+                    // Good!
+                  } else {
+                    $("#id_international").val("S");
+                    vtype = "S";
+                  }
+
+                  // Force pg type to be non-student.
+                  $("#id_postgrad").val("None");
+                  // Disable pg dropdown
+                  $("#id_postgrad").attr("disabled", "disabled");
+                  // Force graduation value to empty
+                  $("#id_year").val("");
+                  // Hide graduation box
+                  $("#graduation_box").hide();
+
+                } else {
+                  // Not staff!
+
+                  // Make sure pg type isn't non-student
+                  $("#id_postgrad").val("False");
+                  // Re-enable pg dropdown
+                  $("#id_postgrad").removeAttr("disabled");
+                  // Show graduation box
+                  $("#graduation_box").show();
+                }
+
+                // Staff do not enter a student ID or course name.
+                if (vtype === "S") {
+                  // Set course to "None" and hide
+                  $("#id_course").val("None");
+                  $("#row_course").hide();
+                  // Set student ID to "None" and hide
+                  $("#id_student_id").val("None")
+                  $("#row_student_id").hide();
+                } else {
+                  // Set course to "None" and hide
+                  $("#id_course").val("");
+                  $("#row_course").show();
+                  // Set student ID to "None" and hide
+                  $("#id_student_id").val("")
+                  $("#row_student_id").show();
+                }
+
+              }
+
+            </script>
+
+            {{ vpform.international }}{{ vpform.postgrad }}
+            {{ vpform.postgrad.errors }}
+            {{ vpform.international.errors }}
+            <div style="margin-top: 10px;">
+              I will graduate in {{ vpform.year }}
+              {{ vpform.year.errors }}
+            </div>
+          </td>
+        </tr>
+
+        {% if features.volunteer_student_id %}
+
+          <tr id="row_student_id">
+            <th>Student ID</th>
+            <td>
+              {{ vpform.student_id.errors }}
+              {{ vpform.student_id }}
+            </td>
+          </tr>
+
+        {% endif %}
+
+        <tr id="row_course">
+          <th>
+            {% if features.course_list %}
+              Course
+            {% else %}
+              Course name
+            {% endif %}
+          </th>
+          <td>
+
+            {% if features.course_list %}
+
+              {{ vpform.course.errors }}
+              <select id="id_course" name="course">
+                <option value="">Please select...</option>
+                {% for faculty in faculties %}
+                  <optgroup label="{{ faculty }}">
+                  {% for course in faculty.course_set.all %}
+                    <option value="{{ course }}" {% if course.name == vpform.course.value %}selected{% endif %}>{{ course }}</option>
+                  {% endfor %}
+                  </optgroup>
+                {% endfor %}
+              </select>
+
+            {% else %}
+              {{ vpform.course.errors }}
+              {{ vpform.course }}
+            {% endif %}
+
+          </td>
+        </tr>
+
+        {% if features.volunteer_school %}
+          <tr>
+            <th>School</th>
+            <td>
+              {{ vpform.school.errors }}
+              <select id="id_school" name="school">
+                <option value="">Please select...</option>
+                {% for faculty in faculties %}
+                  <option value="{{ faculty }}" {% if faculty.name == vpform.school.value %}selected{% endif %}>{{ faculty }}</option>
+                {% endfor %}
+              </select>
+            </td>
+          </tr>
+        {% endif %}
+
+      </table>
+
+      <h5>Contact Information</h5>
+      <p class="extra">Your contact information will only be shared with volunteering organisations that you offer to take opportunities with.</p>
+    
+      <table class="swish registrationform">
+        <tr>
+          <th>Phone number</th>
+          <td>
+            {{ vpform.phone_number.errors }}
+            {{ vpform.phone_number }}
+          </td>
+        </tr>
+
+        {% if features.volunteer_address %}
+
+          <tr>
+            <th>Address</th>
+            <td>
+              {{ vpform.address.errors }}
+              {{ vpform.address }}
+            </td>
+          </tr>
+
+        {% endif %}
+      </table>
+
+      <h5>Personal Information</h5>
+
+      <table class="swish registrationform">
+        <tr>
+          <th>Gender</th>
+          <td>
+            {{ vpform.gender.errors }}
+            {{ vpform.gender }}
+          </td>
+        </tr>
+        <tr>
+          <th>Bio</th>
+          <td>
+            <p>Please tell us and organisations you'll be applying to about yourself, your experience, hobbies and interests. This will help us match you to a volunteer role.</p>
+            {{ vpform.bio.errors }}
+            {{ vpform.bio }}
+          </td>
+        </tr>
+      </table>
+
+      {% if features.availability %}
+
+        <h3>My Availability</h3>
+        <p>On the grid below, click the boxes to indicate when you would prefer to volunteer your time. This helps us match you with suitable positions. For instance, you could indicate that you are only available on Tuesday and Thursday afternoons, or all day on Saturdays.</p>
+        
+        <div style="width: 880px; float: right;">
+          {{ vpform.hours }}
+        </div>
+        <br class="clear"/>
+        
+      {% endif %}
+
+      {% if features.categories %}
+
+        <h4>Interests</h4>
+
+      <table class="swish registrationform">
+        <tr>
+          <th>Position Categories</th>
+          <td>
+            <p>Select the type of positions you are interested in applying for. This will help us find you your perfect volunteering opportunity.</p>
+            {{ vpform.categories }}
+          </td>
+        </tr>
+      </table>
+        
+      {% endif %}
+
+      <h4>And Finally...</h4>
+      
+      <table class="swish registrationform">
+        <tr>
+          <th>How did you hear about us?</th>
+          <td>
+
+            {% if features.how_did_you_hear_options %}
+
+              <p>From the dropdown below, choose the option that best describes how you found
+              out about the Volunteering website.</p>
+              {{ vpform.referrer.errors }}
+              <select id="id_referrer" name="referrer">
+                <option value="None of the above">Please select...</option>
+                {% for how in hows %}
+                  <option value="{{ how }}">{{ how }}</option>
+                {% endfor %}
+                <option value="None of the above">None of the above</option>
+              </select>
+
+            {% else %}
+              <p>Please briefly describe how you found out about the Volunteering website.</p>
+              {{ vpform.referrer.errors }}
+              {{ vpform.referrer }}
+            {% endif %}
+          </td>
+        </tr>
+      </table>
+
+    </div>
+
+    <div class="rep_only hidden">
+
+      {% if not features.service_level_agreements %}
+
+        {# Show the simple statement and checkbox #}
+
+        {% include 'registration/registration_sla.html' %}
+        
+        <table class="swish registrationform">        
+          <tr>
+            <th></th>
+            <td>
+              {{ form.agree.errors }}
+              {{ form.agree }} <b>By checking this box I confirm that our organisation meets the Minimum Criteria and agree to abide by the Service Level Agreement.</b>
+            </td>
+          </tr>
+
+        </table>
+      
+      {% else %}
+
+        {# Advanced service level agreements are enabled for this site, so instead of showing the default SLA and checkbox we show the itemised list specified by staff administrators. #}
+
+        <h4>Organisation Checklist</h4>
+
+        <p>Please answer the following questions about your organisation. Answering "no" to a question will not prevent you from completing registration.</p>
+
+        <table class="swish registrationform">        
+          {% for sla in slas %}
+            <tr>
+              <td style="width: 400px;"><b>{{ sla }}</b></td>
+              <td style="width: 70px;">
+                <input 
+                  name="{{ sla.field_name }}" 
+                  id="{{ sla.field_name }}_yes" 
+                  type="radio" 
+                  value="yes"
+                  {% if sla.field_name in sla_checked.yes %}
+                    checked="checked"
+                  {% endif %}
+                  /> 
+                <label for="{{ sla.field_name }}_yes">Yes</label><br/>
+                <input 
+                  name="{{ sla.field_name }}" 
+                  id="{{ sla.field_name }}_no" 
+                  type="radio" 
+                  value="no"
+                  {% if sla.field_name in sla_checked.no %}
+                    checked="checked"
+                  {% endif %}
+                  />
+                <label for="{{ sla.field_name }}_no">No</label>
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+
+        <p>We may contact you regarding your answers before activating your account on XVS.</p>
+
+        <input type="hidden" name="agree" value="checked">
+
+      {% endif %}
+
+    </div>
+    
+    <table class="swish registrationform">
+      <tr>
+        <th></th>
+        <td>
+        	<p><input type="submit" value="Register"/></p>
+
+          <div class="vol_only">
+            <p style="margin-bottom: 0px;"><b>Note</b>: by registering, you are not applying for a specific role. Once registered, use the site to find positions and click 'apply now' under any opportunity you are interested in.</p>
+          </div>
+        </td>
+      </tr>
+    </table>
+    
+  </div>
+
+</form>
+
+<div style="float: left; width: 400px;">
+  
+  {% include 'registration/registration_intro.html' %}
+  
+</div>
+  
+{% endblock %}

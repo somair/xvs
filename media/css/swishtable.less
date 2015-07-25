@@ -1,0 +1,116 @@
+
+/* lessc: master.less */
+
+table.swish {
+    @border: 1px solid #AAA;
+
+    border: @border;
+    margin: 20px 7px 20px 0;
+    padding: 0;
+    border-spacing: 0;
+    border-radius: 8px;
+
+    td {
+        margin: 0;
+        width: 291px;
+        padding: 10px 10px;
+        background-color: #EEE;
+        background: -webkit-gradient(linear, left bottom, left top, color-stop(0,#EEE), color-stop(1,#FFF));
+        background: -moz-linear-gradient(center bottom, #EEE 0%, #FFF 100%);
+        border-right: @border;
+        border-bottom: @border;
+        vertical-align: top;
+    }
+
+    td:last-child {
+        border-right-width: 0px;
+    }
+    
+    tr:first-child {
+        td:first-child, th:first-child { border-top-left-radius: 8px; }
+        td:last-child, th:last-child { border-top-right-radius: 8px; }
+    }
+    
+    tr:last-child {
+        td, th { border-bottom-width: 0px; }
+        td:first-child, th:first-child { border-bottom-left-radius: 8px; }
+        td:last-child, th:last-child { border-bottom-right-radius: 8px; }
+    }
+
+    td.good, td.bad {
+        background-position: 287px 12px;
+        background-repeat: no-repeat;
+    }
+
+    td.good {
+        background-image: url(../img/icons/accept.png);
+    }
+
+    td.bad {
+        background-image: url(../img/icons/exclamation.png);
+    }
+
+    tr {
+        margin: 0;
+        padding: 0;
+    }
+
+    th, td.section {
+        margin: 0;
+        background-color: #CCC; 
+        background: -webkit-gradient(linear, left bottom, left top, color-stop(0,#CCC), color-stop(1,#EEE));
+        background: -moz-linear-gradient(center bottom, #CCC 0%, #EEE 100%);
+        text-align: left;
+        padding: 3px 10px;
+        border-bottom: @border;
+
+        h1, h2, h3, h4, h5, h6 { 
+            margin-bottom: 0px;
+        }
+    }
+
+    tr:first-child th, td.section {
+        border-radius: 8px 8px 0 0;
+    }
+
+    td.section {
+        font-size: 0.8em;
+        font-weight: bold;
+    }
+
+    a {
+        text-decoration: none;
+        display: block;
+    }
+
+    td.button {
+        width: 311px;
+        padding: 0px;
+
+        a {
+            padding: 10px 20px;
+        }
+
+        .icon {
+            background-repeat: no-repeat;
+            background-position: 12px 12px;
+            padding-left: 34px;
+        }
+
+        a:hover {
+            background-color: #CCC; 
+        }
+
+    }
+    
+}
+
+table.swish.right {
+    float: right;
+    margin-left: 100px;
+}
+
+table.swish.left { 
+    float: left;
+    margin-right: 80px;
+}

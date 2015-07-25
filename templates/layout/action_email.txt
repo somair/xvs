@@ -1,0 +1,9 @@
+{% extends 'layout/email.txt' %}
+
+{% block content %}
+Dear {{ recipient.get_full_name }},
+
+{{ message|safe|wordwrap:78 }}
+
+{% endblock %}
+

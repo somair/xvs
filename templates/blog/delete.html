@@ -1,0 +1,24 @@
+{% extends 'blog/base.html' %}
+
+{% load url from future %}
+
+
+{% block title %}Delete Blog Entry{% endblock %}
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'blogs.views.deleteentry' page.id %}">Delete Blog Entry</a>
+{% endblock %}
+
+{% block content %}
+
+<h1 style="margin-bottom: 5px;">{{ FRIENDLY_NAME }} Blogs</h1>
+	<hr style="color: #888888; border: 1px solid #888888; margin-top: 1px; margin-bottom: 20px;"/>
+
+<form method="post" action="">
+	{% csrf_token %}
+	<div style="padding: 20px;">
+        <p>Are you sure you want to delete the blog entry: {{ page.title }}</p>
+        <input type="submit" value="Delete" />&nbsp; &nbsp;<a href="/blogs/admin">Cancel</a>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends 'profiles/profile.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'hours.views.commitment' commitment.id %}">{{ commitment.organisation }}
+    {% if commitment.position %} &mdash; {{ commitment.position.name }}{% endif %}</a>
+{% endblock %}
+
+{% block content %}
+
+  <h1></h1>
+  
+  <table class="data cols">
+    <tr><th></th><td>
+      <h1 style="margin-bottom: 0px;">Volunteering summary</h1>
+      <h2 style="margin-top: 0px;">
+        <a href="{% url 'profiles.views.profile' commitment.volunteer.id %}" class="entity volunteer">{{ commitment.volunteer.get_full_name }}</a> 
+        <span style="font-weight: normal;">for</span> 
+        <a href="{% url 'positions.views.organisation' commitment.organisation.id %}" class="entity organisation">{{ commitment.organisation }}</a>
+
+        {% if user.is_staff %}
+          <a class="editlink" href="{% url 'admin:hours_commitment_change' commitment.id %}">Edit in Admin</a>
+        {% endif %}
+      </h2>
+      
+    {% if commitment.position %}
+      <tr>
+        <th>Position</th>
+        <td>
+          {{ commitment.position.name }}
+        </td>
+      </tr>
+    {% endif %}
+    
+    <tr>
+      <th>Started</th>
+      <td>
+        {{ commitment.started|date:"jS F Y" }}
+      </td>
+    </tr>
+    
+    <tr>
+      <th>Finished</th>
+      <td>
+        {% if commitment.finished %}
+          {{ commitment.finished|date:"jS F Y" }}
+        {% else %}
+          This commitment is ongoing.
+        {% endif %}
+
+        {% if user.get_profile.representativeprofile.organisation == commitment.organisation or user.is_staff %}
+        <table class="swish">
+          <tr><th>
+            <h4>{% if commitment.finished %}Change volunteer's finish date{% else %}Set a finish date{% endif %}</h4>
+          </th><tr>
+          <tr><td>
+            <form method="post" action="{% url 'hours.views.set_finish_date' commitment.id %}">
+              
+              {% csrf_token %}
+              {{ date_form.date }}
+              <input type="submit" value="Set finish date"/>
+              
+            </form>
+            
+            
+            {% if commitment.finished %}
+              <form method="post" action="{% url 'hours.views.clear_finish_date' commitment.id %}">
+                {% csrf_token %}
+                <input type="submit" value="Remove finish date"/>
+              </form>
+            {% endif %}
+
+            <p style="margin-top: 10px;">You can set the volunteers' finishing date to be in the past or in the future.</p>
+            <p style="margin-top: 10px;">Setting a finish date helps complete the volunteer's Volunteering CV.</p>
+
+            
+          </td></tr>
+        </table>
+        {% endif %}
+      </td>
+      <td>
+      <br />
+      {% if features.endorsement %}
+      <table class="swish">
+          <tr><th>
+            <h4>Endorsement</h4>
+          </th><tr>
+          <tr><td>
+          {% if not endorsement %}
+            <form method="post" action="{% url 'hours.views.add_endorsement' commitment.id %}">
+              <p>You can endorse a volunteer, this will appear on their CV.</p>
+              {% csrf_token %}
+              {{ endorsement_form.endorsement_text }}
+              <input type="submit" value="Add endorsement"/>
+              
+            </form>
+          {% else %}
+          <p><em>This commitment already has an endorsement:</em></p>
+          <p>{{ endorsement.endorsement_text }}</p>
+          {% endif %}
+          </td></tr>
+        </table>
+          {% endif %}
+        </td>
+        </tr>
+    </tr>
+
+  </table>
+
+{% endblock %}

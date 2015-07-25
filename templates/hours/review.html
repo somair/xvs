@@ -1,0 +1,96 @@
+{% extends 'layout/master.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'hours.views.review' %}">Hours Review</a>
+{% endblock %}
+
+{% block extrajavascript %}
+  
+  <script type="text/javascript" charset="utf-8">
+    function mark_record(record_id, status) {
+      console.log("Marking " + record_id + " " + status);
+      
+      var controls = $("#controls_" + record_id);
+      
+      $.post("{% url 'hours.views.mark_record' %}", {
+        record_id: record_id,
+        status: status,
+        csrfmiddlewaretoken: "{{ csrf_token }}"
+      }, function(data, textStatus, jqXHR) {
+        controls.html("<b>"+data+"</b>");
+      });
+      
+    }
+  
+  
+    $(function(){
+      $(".correct").click(function(){
+        var id = $(this).attr('id').substring(8);
+        mark_record(id, "correct");
+      });
+
+      $(".unconfirmable").click(function(){
+        var id = $(this).attr('id').substring(8);
+        mark_record(id, "unconfirmable");
+      });
+    });
+
+  </script>
+
+{% endblock extrajavascript %}
+
+{% block content %}
+
+  <h3>Unverified Time Records{% if is_organisation or organisation %} Logged for 
+    {% if organisation %}
+      <a class="entity organisation" href="{{ organisation.get_absolute_url }}">{{ organisation }}</a>
+    {% else %}
+      Your Organisation
+    {% endif %}
+  {% endif %}</h3>
+
+  <div style="width: 650px;">
+    <p>The time records below require verification. For each record, indicate whether the record is correct, or that you are unable to confirm the record.</p>
+  
+    <p>An unconfirmed record is allowed to remain on a volunteer's CV, but it is marked to indicate that the organisation were not able to confirm that the work was done.</p>
+  
+    <p>If you are concerned that a record is incorrect, <b>you should not click a button now, but instead contact the volunteer to discuss it</b>. The volunteer can remove the record if you determine that it is incorrect.</p>
+  </div>
+    
+  {% for volunteer, timerecords in volunteers %}
+    
+    <table class="data cols hours">
+      <tr><th></th><td><h2>{{ volunteer.get_full_name }}</h2></td></tr>
+      {% for timerecord in timerecords %}
+      <tr>
+        <th>{{ timerecord.date_worked }}</th>
+        <td>
+          <a href="{% url 'profiles.views.profile' timerecord.volunteer.id %}">
+            {{ timerecord.volunteer.get_full_name }}</a> &mdash; 
+            {% if not is_organisation %}
+              {{ timerecord.manual_organisation }} &mdash;
+            {% endif %}
+            {{ timerecord.hours }} hour{{ timerecord.hours|pluralize }}{% if timerecord.minutes %}, {{ timerecord.minutes }} minutes{% endif %}
+
+          {% if timerecord.description %}
+            <div class="description">{{ timerecord.description|linebreaks }}</div>
+          {% endif %}
+        
+          <div id="controls_{{ timerecord.id }}" style="height: 30px;">
+            <input type="submit" class="correct" id="correct_{{ timerecord.id }}" value="Mark the record as correct"/>
+            <input type="submit" class="unconfirmable" id="unconfi_{{ timerecord.id }}" value="Mark the record as unconfirmable"/>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><th></th><td><h4>There are no records to review at this time.</h4></td></tr>
+      {% endfor %}
+    </table>
+
+  {% endfor %}
+
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'layout/master.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'reports.views.sla_check' %}">SLA Report</a>
+{% endblock %}
+
+{% block extracss %}
+  <link rel="stylesheet" href="//cdn.datatables.net/1.10.0/css/jquery.dataTables.css" type="text/css"/>
+{% endblock %}
+
+{% block extrajavascript %}
+  <script type="text/javascript" src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
+   <script type="text/javascript" charset="utf-8">
+    $(function(){
+      var offer_table = $('#offer_table').DataTable({
+          "stateSave": true,
+          "pageLength": 100,
+          "sorting": [
+            [3, "desc"]
+          ]
+        });
+    })
+   </script>
+{% endblock %}
+
+{% block content %}
+
+  <h2>
+    <div class="filter">
+      <label>Showing...</label>
+      <a href="{% url 'sla-report-all' %}" {% if filter == 'all' %}class='selected'{% endif %}>all offers</a>
+      <a href="{% url 'sla-report-recent' %}" {% if filter == 'recent' %}class='selected'{% endif %}>offers in the last month</a>
+    </div>
+    SLA Report
+  </h2>
+
+  <p>This report shows offers that are awaiting a response from the representative of an organisation. The "days waiting for response" column indicates how many days have passed since the organisation received the offer.</p>
+
+  <table id="offer_table" class="display">
+    <thead>
+      <tr>
+        <th>Volunteer</th>
+        <th>Organisation</th>
+        <th>Offer received by organisation</th>
+        <th>Days waiting for response</th>
+        <th>&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for offer in offers %}
+        <tr>
+          <td class="nowrap"><a href="{% url 'profiles.views.profile' offer.volunteer.id %}" class="entity volunteer">{{ offer.volunteer.get_full_name }}</a></td>
+          <td class="nowrap"><a href="{{ offer.position.organisation.get_absolute_url }}" class="entity organisation">{{ offer.position.organisation }}</a>a.</td>
+          <td>{{ offer.time_staff_accepted|date:"j M Y" }}</td>
+          <td>{{ offer.days_since_time_staff_accepted }}</td>
+          <td class="nowrap"><a href="{% url 'offers.views.offer' offer.id %}">See offer &gt;&gt;</a></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+    
+{% endblock %}
