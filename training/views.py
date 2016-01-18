@@ -1,5 +1,7 @@
 from training import models, forms
 
+from mailer import models as mailer_models
+
 from decorators import staff_required
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render, get_object_or_404
@@ -149,6 +151,11 @@ def new_event(request, event_id=None):
 def delete_event(request, event_id):
 	'''Staff can delete an existing event'''
 
+	event = get_object_or_404(models.Event, pk=event_id)
+	event.delete()
+
+	return redirect(reverse('training_admin')) 
+
 @staff_required
 def attendance_register(request, event_id):
 	'''Staff can view a register of those signed up to an event'''
@@ -166,6 +173,36 @@ def attendance_register(request, event_id):
 def confirm_attendance(request, event_id, attendee_id):
 	'''Staff can confirm an attendee was at an event'''
 
+	attendee = get_object_or_404(models.Attendee, pk=attendee_id, event__pk=event_id)
+
+	attendee.confirmed = True
+	attendee.save()
+
+	return redirect(reverse('event_register', kwargs={'event_id': event_id}))
+
+@staff_required
+def remove_attendance(request, event_id, attendee_id):
+	'''Marks attendance as false'''
+
+	attendee = get_object_or_404(models.Attendee, pk=attendee_id, event__pk=event_id)
+
+	attendee.confirmed = False
+	attendee.save()
+
+	return redirect(reverse('event_register', kwargs={'event_id': event_id}))
+
 @staff_required
 def non_attendee_contact(request, event_id):
 	'''Staff can contact all of the people who did not attend the event'''
+	event = get_object_or_404(models.Event, pk=event_id)
+
+	new_mailout = mailer_models.Mailout(subject='%s - Event Attendance' % event.training.title , created_by=request.user)
+	new_mailout.save()
+
+	non_attendees = models.Attendee.objects.filter(event=event, confirmed=False)
+
+	for r in non_attendees:
+		new_recipient = mailer_models.Recipient(mailout=new_mailout, user=r.user)
+		new_recipient.save()
+
+	return redirect(reverse('mailout-detail', kwargs={'mailout_id': new_mailout.pk}))
