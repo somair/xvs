@@ -1,0 +1,50 @@
+{% extends 'layout/master.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'training_index' %}">Training</a>
+{% endblock %}
+
+{% block extracss %}
+  <link rel="stylesheet" href="//cdn.datatables.net/1.10.0/css/jquery.dataTables.css" type="text/css"/>
+{% endblock %}
+
+{% block extrajavascript %}
+  <script type="text/javascript" src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
+   <script type="text/javascript" charset="utf-8">
+    $(function(){
+      var volunteer_table = $('#volunteer_table').DataTable({
+          "stateSave": true,
+          "pageLength": 100
+        });
+    })
+   </script>
+{% endblock %}
+
+{% block content %}
+	<h2>Current Training Events</h2>
+	<p>You can sign up to attend a training event. You can withdraw if the event is not within the next 24 hours.</p>
+	<table id="volunteer_table" class="display">
+	<thead>
+      <tr>
+        <th>Title</th>
+        <th>Time</th>
+        <th>Location</th>
+        <th></th>
+      </tr>
+    </thead>
+	<tbody>
+	{% for event in events %}
+		<tr>
+			<td>{{ event.training.title }}</td>
+			<td>{{ event.date_time }}</td>
+			<td>{{ event.location }}</td>
+			<td><a href="{% url 'training_view' event.pk %}">View Info</a>
+		</tr>
+	{% endfor %}
+	</tbody>
+	</table>
+{% endblock content %}

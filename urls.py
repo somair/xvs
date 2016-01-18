@@ -133,6 +133,11 @@ if settings.FEATURE_LOGIN_AS:
         url(r'^profiles/loginas/(?P<user_id>\d+)/$', 'profiles.views.login_as_user', name='login_as_user' ),
     )
 
+if settings.FEATURE_TRAINING:
+    urlpatterns += patterns('',
+        url(r'^training/', include('training.urls')),
+    )
+
 if settings.DEBUG:
     urlpatterns += patterns('',
         (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}),

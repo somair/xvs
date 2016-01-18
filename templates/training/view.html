@@ -1,0 +1,52 @@
+{% extends 'layout/master.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'training_index' %}">Training</a>
+  <a href="{% url 'training_view' event.pk %}">Event - {{ event.pk }}</a>
+{% endblock %}
+
+{% block content %}
+<h2 style="margin-bottom: 0px;">{{ event.training.title }}</h2>
+<strong>Description: </strong><br />{{ event.training.description|linebreaks}}
+
+<table class="data cols">
+	<tbody>
+		<tr>
+			<th>Date &amp; Time</th>
+        	<td>{{ event.date_time }}</td>
+      	</tr>
+      	<tr>
+			<th>Location</th>
+        	<td>{{ event.location|linebreaks }}</td>
+      	</tr>
+      	<tr>
+			<th>Skills</th>
+        	<td>
+        		{% for skill in event.training.skills.all %}
+        			{{ skill.name }}<br />
+        		{% endfor %}
+        	</td>
+      	</tr>
+	</tbody>
+</table>
+
+<table class="swish right">
+      <tbody><tr><th>
+        <h4>Attend Training</h4>
+      </th></tr>
+      <tr><td>
+      {% if attendee_check %}
+      	<p>You are registered to attend this training event. You can withdraw from this event up to 24hrs before hand.</p>
+        <p><a href="{% url 'training_withdraw' event.pk %}">Withdraw</a></p>
+        {% else %}
+        <p>You can withdraw from this event up to 24hrs before hand.</p>
+        <p><a href="{% url 'training_attend' event.pk %}">Register</a></p>
+        {% endif %}
+      </td></tr>
+    </tbody></table>
+
+{% endblock content %}

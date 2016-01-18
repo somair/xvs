@@ -199,6 +199,9 @@ FEATURE_LOGIN_AS = False
 # Option adds the student ID to volunteer report and export
 FEATURE_DISPLAY_STUDENT_ID = False
 
+# Setting this to true will enable the training module
+FEATURE_TRAINING = False
+
 # Some instances wish to allow non-students to register. In this case,
 # the 'R' and 'S' choices can be enabled in the international dropdown.
 # If you enable 'R' and 'S' you *must* enable the "None" grad choice.
@@ -260,6 +263,7 @@ PROJECT_NAME = 'volunteering'
     
 # This imports your instance_settings overrides.
 from instance_settings import *
+from local_settings import *
     
 # If the instance settings didn't supply an explicit database
 # configuration, set up the default configuration using the instance
@@ -316,7 +320,7 @@ MEDIA_ROOT = '%s/%s/media' % (PATH_PREFIX, PROJECT_NAME,)
 
 BASE_URL = '/'
 
-STATIC_URL = MEDIA_URL + "new/"
+STATIC_URL = "/static/"
 
 STATIC_ROOT = "%s/%s/staticroot/" % (PATH_PREFIX, PROJECT_NAME,)
 
@@ -369,7 +373,7 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    'raven.contrib.django.raven_compat',
+#    'raven.contrib.django.raven_compat',
 #    'debug_toolbar',
     '%s.pages' % PROJECT_NAME,
     'south',
@@ -385,6 +389,7 @@ INSTALLED_APPS = (
     'blogs',
     'mailer',
     'notes',
+    'training',
 )
 
 ACCOUNT_ACTIVATION_DAYS = 21
