@@ -188,7 +188,7 @@ FEATURE_ENDORSEMENT = False
 FEATURE_GA = False
 
 # Awards can be given to students based on amount of hours done.
-FEATURE_AWARD = False
+FEATURE_AWARD = True
 
 # New profile layout (for Tees, but can be used by others...)
 FEATURE_PROFILE_V2 = False
@@ -201,6 +201,7 @@ FEATURE_DISPLAY_STUDENT_ID = False
 
 # Setting this to true will enable the training module
 FEATURE_TRAINING = False
+FEATURE_TRAINING_EVENT = False
 
 # Some instances wish to allow non-students to register. In this case,
 # the 'R' and 'S' choices can be enabled in the international dropdown.

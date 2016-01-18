@@ -9,3 +9,4 @@ class EndorsementAdmin(admin.ModelAdmin):
 
 admin.site.register(Commitment, CommitmentAdmin)
 admin.site.register(Endorsement, EndorsementAdmin)
+admin.site.register(TimeRecord,)
