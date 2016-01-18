@@ -390,6 +390,7 @@ INSTALLED_APPS = (
     'mailer',
     'notes',
     'training',
+    'work_experience',
 )
 
 ACCOUNT_ACTIVATION_DAYS = 21

@@ -1,0 +1,49 @@
+{% extends 'layout/master.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'work_experience_new' %}">Work Experience</a>
+{% endblock %}
+
+
+{% block extracss %}
+  <link rel="stylesheet" href="//cdn.datatables.net/1.10.0/css/jquery.dataTables.css" type="text/css"/>
+{% endblock %}
+
+{% block extrajavascript %}
+  <script type="text/javascript" src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
+   <script type="text/javascript" charset="utf-8">
+    $(function(){
+      var volunteer_table = $('#table').DataTable();
+    })
+   </script>
+{% endblock %}
+
+
+{% block content %}
+	<h2>New Work Experience</h2>
+	<p>Fill the following to form to add a new entry to your work experience</p>
+	<table id="table" class="display">
+	<thead>
+      <tr>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+      </tr>
+    </thead>
+	<tbody>
+
+		<tr>
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+
+	</tbody>
+	</table>
+{% endblock content %}
