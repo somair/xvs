@@ -76,6 +76,7 @@ def tandem_context(request):
             'award': settings.FEATURE_AWARD,
             'login_as': settings.FEATURE_LOGIN_AS,
             'student_id': settings.FEATURE_DISPLAY_STUDENT_ID,
+            'training': settings.FEATURE_TRAINING,
             },
 
         'sla_checked': sla,
