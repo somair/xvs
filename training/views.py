@@ -16,7 +16,8 @@ def index(request):
 
 	template = 'training/index.html'
 	context = {
-		'events': models.Event.objects.filter(date_time__gte=datetime.now())
+		'events': models.Event.objects.filter(date_time__gte=datetime.now()),
+		'user_events': models.Attendee.objects.filter(user=request.user).order_by('event__date_time')
 	}
 
 	return render(request, template, context)

@@ -47,4 +47,20 @@
 	{% endfor %}
 	</tbody>
 	</table>
+
+  <h2>My Training</h2>
+  <table style="width: 75%;">
+    <tr>
+      <th style="text-align: left;">Training</th>
+      <th style="text-align: left;">Date/Time</th>
+      <th style="text-align: left;">Attendance Record</th>
+    </tr>
+    {% for attendance in user_events %}
+    <tr>
+      <td>{{ attendance.event.training.title }}</td>
+      <td>{{ attendance.event.date_time }}</td>
+      <td>{% if attendance.confirmed %}Confirmed{% else %}Not confirmed{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </table>
 {% endblock content %}
