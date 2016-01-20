@@ -122,6 +122,13 @@ $(function(){
                 </td>
               </tr>
             {% endif %}
+            {% if features.training %}
+            <tr>
+                <td class="button">
+                  <a class="icon group" href="{% url 'training_index' %}">Training</a>
+                </td>
+              </tr>
+            {% endif %}
           {% else %}
             <tr>
               <td class="button">
@@ -247,6 +254,13 @@ $(function(){
           <tr>
             <td class="button">
               <a class="icon email" href="{% url 'mailouts-list-all' '' %}">Mailouts list</a>
+            </td>
+          </tr>
+        {% endif %}
+        {% if features.training %}
+        <tr>
+            <td class="button">
+              <a class="icon group" href="{% url 'training_admin' %}">Training Admin</a>
             </td>
           </tr>
         {% endif %}

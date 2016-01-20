@@ -16,5 +16,9 @@ urlpatterns = patterns('',
 	url(r'^admin/event/new/$', 'training.views.new_event', name='new_event'),
 	url(r'^admin/event/edit/(?P<event_id>\d+)/$', 'training.views.new_event', name='edit_event'),
 	url(r'^admin/event/register/(?P<event_id>\d+)/$', 'training.views.attendance_register', name='event_register'),
+	url(r'^admin/event/register/(?P<event_id>\d+)/delete/$', 'training.views.delete_event', name='delete_event'),
+	url(r'^admin/event/register/(?P<event_id>\d+)/contact/$', 'training.views.non_attendee_contact', name='non_attendee_contact'),
+	url(r'^admin/event/register/(?P<event_id>\d+)/confirm/(?P<attendee_id>\d+)/$', 'training.views.confirm_attendance', name='confirm_attendance'),
+	url(r'^admin/event/register/(?P<event_id>\d+)/remove/(?P<attendee_id>\d+)/$', 'training.views.remove_attendance', name='remove_attendance'),
 
 )

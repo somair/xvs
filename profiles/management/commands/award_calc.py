@@ -40,14 +40,35 @@ class Command(BaseCommand):
 				hours = int(minutes/60)
 	   			minutes = minutes%60
 
+	   			training_list = set(attendee.event.training for attendee in v.attendee_set.all() if attendee.confirmed)
+
 	   			for award in award_types:
 	   				if hours > award.hours_required:
-	   					print '%s: %s' % (v.username, award.name)
-	   					a, created = models.Award.objects.get_or_create(award=award, user=v)
-	   					if created:
-	   						awarded.append([v.first_name, v.last_name, award, hours])
+
+	   					if settings.FEATURE_TRAINING_EVENT:
+
+	   						training_required = set(training for training in award.training_required.all())
+
+	   						if training_required.issubset(training_list):
+		   						print '%s: %s' % (v.username, award.name)
+			   					a, created = models.Award.objects.get_or_create(award=award, user=v)
+			   					if created:
+			   						awarded.append([v.first_name, v.last_name, award, hours])
+			   					else:
+			   						print 'This award already existed.'
+
+			   				else:
+
+			   					print 'Volunteer has not attended required training.'
+
 	   					else:
-	   						print 'This award already existed.'
+
+		   					print '%s: %s' % (v.username, award.name)
+		   					a, created = models.Award.objects.get_or_create(award=award, user=v)
+		   					if created:
+		   						awarded.append([v.first_name, v.last_name, award, hours])
+		   					else:
+		   						print 'This award already existed.'
 
 	   		send_email(awarded=awarded)
 	   	else:

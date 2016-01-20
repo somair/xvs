@@ -28,6 +28,7 @@
 {% block content %}
 <h2>Event Register</h2>
 <p>{{ event.training.title }}, {{ event.date_time }}</p>
+<p><a href="{% url 'non_attendee_contact' event.pk %}">Contact Non Attending Users</a></p>
 <table id="register" class="display">
   <thead>
       <tr>
@@ -45,7 +46,7 @@
       <td>{{ attendee.user.last_name }}</td>
       <td>{{ attendee.user.email }}</td>
       <td>{% if attendee.confirmed %}Present{% else %}Not confirmed{% endif %}</td>
-      <td><a href="">Mark Present</a></td>
+      <td>{% if not attendee.confirmed %}<a href="{% url 'confirm_attendance' event.pk attendee.pk %}">Mark Present</a>{% else %}<a href="{% url 'remove_attendance' event.pk attendee.pk %}">Mark Not Present</a>{% endif %}</td>
     </tr>
   {% endfor %}
   </tbody>

@@ -31,9 +31,14 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 SECRET_KEY = '_%@8*2$*1*i&um4+#a6w(%xqa_19=tfmhu9u-l*7t(a$g(2)wg'
 
 FEATURE_TRAINING = True
+
 FEATURE_WORK_EXPERIENCE = True
 
 
 USE_I18N = False
 
 ONLY_ALLOW_EMAIL_ADDRESSES_ENDING_WITH = 'com'
+
+FEATURE_TRAINING_EVENT = True
+FEATURE_MAILOUTS = True
+

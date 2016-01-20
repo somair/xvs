@@ -155,6 +155,20 @@
             {% endfor %}
           </td>
         </tr>
+        {% if features.training %}
+        <tr>
+          <td><strong>Training</strong></td>
+        </tr>
+        <tr>
+          <td>
+            {% for attendance in request.user.attendee_set.all %}
+            {{ attendance.event.training.title }}<br />
+            {% empty %}
+            No skills to list.
+            {% endfor %}
+          </td>
+        </tr>
+        {% endif %}
         </table>
     </div>
 

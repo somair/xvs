@@ -4,6 +4,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from actions.controller import get_pending_actions
 from hours.logic import get_unconfirmed_hours
 
+from pages import models as pages_models
+
 def tandem_context(request):
 
     sla = { 'yes': {}, 'no': {} }
@@ -76,6 +78,7 @@ def tandem_context(request):
             'award': settings.FEATURE_AWARD,
             'login_as': settings.FEATURE_LOGIN_AS,
             'student_id': settings.FEATURE_DISPLAY_STUDENT_ID,
+            'training': settings.FEATURE_TRAINING,
             },
 
         'sla_checked': sla,
@@ -85,3 +88,5 @@ def tandem_context(request):
 
     return context
 
+def links(request):
+    return {"links": pages_models.Link.objects.all()}

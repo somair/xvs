@@ -264,6 +264,8 @@ class AwardType(models.Model):
     hours_required = models.IntegerField()
     plus = models.BooleanField(default=False)
 
+    training_required = models.ManyToManyField('training.Training', blank=True, null=True)
+
     def __unicode__(self):
         return self.name
 
