@@ -353,6 +353,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.media",
     "django.contrib.messages.context_processors.messages",
     "%s.processors.tandem_context" % PROJECT_NAME,
+    "%s.processors.links" % PROJECT_NAME,
+
 )
 
 ROOT_URLCONF = '%s.urls' % PROJECT_NAME
