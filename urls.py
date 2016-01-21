@@ -126,6 +126,7 @@ if settings.FEATURE_ENDORSEMENT:
 if settings.FEATURE_AWARD:
     urlpatterns +=  patterns('',
         (r'^reports/awards$', 'reports.views.awards'),
+        url(r'^profiles/myawards/$', 'profiles.views.my_awards', name='my_awards'),
     )
 
 if settings.FEATURE_LOGIN_AS:

@@ -605,3 +605,28 @@ def login_as_user(request, user_id):
     login(request, user)
 
     return redirect("/")
+
+@login_required
+def my_awards(request):
+
+    timerecords = request.user.timerecord_set.all()
+    minutes = 0
+    for tr in timerecords:
+        minutes += (60*tr.hours + tr.minutes) 
+    
+    hours = int(minutes/60)
+    minutes = minutes%60
+
+    my_awards = Award.objects.filter(user=request.user)
+    my_award_types = [award.award for award in my_awards]
+    all_awards = AwardType.objects.all().order_by('hours_required')
+    print my_awards
+    print all_awards
+
+    return render_to_response("profiles/my_awards.html", {
+            'hours': hours,
+            'my_awards': my_awards,
+            'my_award_types': my_award_types,
+            'all_awards': all_awards,
+            }, context_instance=RequestContext(request))
+
