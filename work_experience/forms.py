@@ -13,5 +13,5 @@ class WorkExperienceForm(forms.ModelForm):
 
 	class Meta:
 		model = models.WorkExperience
-		exclude = ['volunteer', 'skills', 'confirmed']
+		exclude = ['volunteer_profile', 'skills', 'confirmed']
 		widgets = {'certifications': forms.CheckboxSelectMultiple}

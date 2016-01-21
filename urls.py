@@ -140,7 +140,7 @@ if settings.FEATURE_TRAINING:
 
 if settings.FEATURE_WORK_EXPERIENCE:
     urlpatterns += patterns('',
-        url(r'^we/', include('work_experience.urls')),
+        url(r'^work_experience/', include('work_experience.urls')),
     )
 
 if settings.DEBUG:

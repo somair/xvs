@@ -6,7 +6,7 @@
 
 {% block nav %}
   {{ block.super }}
-  <a href="{% url 'we_dashboard' %}">Work Experience</a>
+  <a href="{% url 'work_experience' %}">Work Experience</a>
 {% endblock %}
 
 
@@ -73,7 +73,7 @@
           <td>{{ we.description|truncatechars:25 }}</td>
           <td>{{ we.hours }}</td>
           <td>{{ we.reference_email }}</td>
-          <td><a href="">d</a></td>
+          <td><a class="icon table_delete" href="{% url 'work_experience_delete' we.pk %}"></a></td>
     		</tr>
         {% endfor %}
     	</tbody>

@@ -17,6 +17,9 @@ DATABASES = {
             'NAME': '%s' % INSTANCE_NAME,
             'USER': 'root',
             'PASSWORD': 'root',
+            'OPTIONS': {
+         		"init_command": "SET foreign_key_checks = 0;",
+         		},
             }
         }
 

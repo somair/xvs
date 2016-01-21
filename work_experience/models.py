@@ -8,14 +8,20 @@ from uuid import uuid4
 class Certification(models.Model):
 	name = models.CharField(max_length=255)
 
+	def __str__(self):
+		return self.name
+
 
 class VolunteerSkill(models.Model):
 	name = models.CharField(max_length=255)
 
+	def __str__(self):
+		return self.name
+
 
 class WorkExperience(models.Model):
 
-	volunteer = models.ForeignKey(VolunteerProfile)
+	volunteer_profile = models.ForeignKey(VolunteerProfile)
 	role = models.CharField(max_length=511)
 	description = models.TextField()
 	hours = models.FloatField(verbose_name="Hours per week")
@@ -25,8 +31,6 @@ class WorkExperience(models.Model):
 	confirmation_code = models.CharField(max_length=255, editable=False, default=str(uuid4()))
 	confirmed = models.BooleanField(default=False)
 
-	def send_confirmation_email(self):
-		#TODO send confirmation email to reference
-		pass
+
 
 
