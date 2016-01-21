@@ -105,6 +105,14 @@ $(function(){
                 <a class="icon cv" href="{% url 'hours.views.volunteer_hours' user.id %}">Record my hours</a>
               </td>
             </tr>
+            {% if features.award %}
+            <tr>
+              <td class="button">
+                <a class="icon opp_list" href="{% url 'my_awards' %}">
+                My awards</a>
+              </td>
+            </tr>
+            {% endif %}
             <tr>
               <td class="button">
                 <a class="icon applications" href="{% url 'profiles.views.offers' user.id %}">View my applications</a>
