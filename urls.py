@@ -139,6 +139,11 @@ if settings.FEATURE_TRAINING:
         url(r'^training/', include('training.urls')),
     )
 
+if settings.FEATURE_WORK_EXPERIENCE:
+    urlpatterns += patterns('',
+        url(r'^work_experience/', include('work_experience.urls')),
+    )
+
 if settings.DEBUG:
     urlpatterns += patterns('',
         (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}),

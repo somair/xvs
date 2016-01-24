@@ -19,6 +19,7 @@ DATABASES = {
         }
 
 PATH_PREFIX = os.path.dirname(os.path.dirname(__file__))
+FEATURE_WORK_EXPERIENCE = True
 
 MEDIA_URL = "http://localhost:8000/media/"
 

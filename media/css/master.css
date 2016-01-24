@@ -499,6 +499,12 @@ table.swish form .tinyhint {
 .icon.profile {
   background-image: url(../img/icons/user_edit.png);
 }
+.icon.database_edit {
+  background-image: url(../img/icons/database_edit.png);
+}
+.icon.table_delete {
+  background-image: url(../img/icons/table_delete.png);
+}
 .icon.opportunities {
   background-image: url(../img/icons/find.png);
 }

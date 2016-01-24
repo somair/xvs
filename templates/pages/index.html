@@ -137,6 +137,13 @@ $(function(){
                 </td>
               </tr>
             {% endif %}
+            {% if features.work_experience and request.user.get_profile.try_get_volunteer_profile %}
+            <tr>
+                <td class="button">
+                  <a class="icon database_edit" href="{% url 'work_experience' %}">Work experience</a>
+                </td>
+              </tr>
+            {% endif %}
           {% else %}
             <tr>
               <td class="button">
@@ -305,6 +312,14 @@ $(function(){
           <td class="button">
             <a class="icon report" href="{% url 'reports.views.awards' %}">
               Awards Report</a>
+          </td>
+        </tr>
+        {% endif %}
+        {% if features.work_experience %}
+        <tr>
+          <td class="button">
+            <a class="icon report" href="{% url 'work_experience_report' %}">
+              Work Experience Report</a>
           </td>
         </tr>
         {% endif %}

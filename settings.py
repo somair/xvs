@@ -380,6 +380,7 @@ INSTALLED_APPS = (
 #    'debug_toolbar',
     '%s.pages' % PROJECT_NAME,
     'south',
+    'bootstrap3',
     'djrill',
     'positions',
     'profiles',
@@ -393,6 +394,7 @@ INSTALLED_APPS = (
     'mailer',
     'notes',
     'training',
+    'work_experience',
 )
 
 ACCOUNT_ACTIVATION_DAYS = 21
