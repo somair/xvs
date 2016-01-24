@@ -89,4 +89,8 @@ def tandem_context(request):
     return context
 
 def links(request):
-    return {"links": pages_models.Link.objects.all()}
+    return {
+        "header_links": pages_models.Link.objects.filter(location='header'),
+        "footer_links": pages_models.Link.objects.filter(location='footer'),
+    }
+
