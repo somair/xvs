@@ -188,7 +188,7 @@ FEATURE_ENDORSEMENT = False
 FEATURE_GA = False
 
 # Awards can be given to students based on amount of hours done.
-FEATURE_AWARD = True
+FEATURE_AWARD = False
 
 # New profile layout (for Tees, but can be used by others...)
 FEATURE_PROFILE_V2 = False
@@ -264,7 +264,6 @@ PROJECT_NAME = 'volunteering'
     
 # This imports your instance_settings overrides.
 from instance_settings import *
-from local_settings import *
     
 # If the instance settings didn't supply an explicit database
 # configuration, set up the default configuration using the instance
@@ -321,7 +320,7 @@ MEDIA_ROOT = '%s/%s/media' % (PATH_PREFIX, PROJECT_NAME,)
 
 BASE_URL = '/'
 
-STATIC_URL = "/static/"
+STATIC_URL = MEDIA_URL + "new/"
 
 STATIC_ROOT = "%s/%s/staticroot/" % (PATH_PREFIX, PROJECT_NAME,)
 
@@ -376,8 +375,8 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-#    'raven.contrib.django.raven_compat',
-#    'debug_toolbar',
+    'raven.contrib.django.raven_compat',
+
     '%s.pages' % PROJECT_NAME,
     'south',
     'djrill',
