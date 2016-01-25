@@ -380,7 +380,6 @@ INSTALLED_APPS = (
 #    'debug_toolbar',
     '%s.pages' % PROJECT_NAME,
     'south',
-    'bootstrap3',
     'djrill',
     'positions',
     'profiles',

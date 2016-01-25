@@ -21,11 +21,11 @@ def work_experience(request, we_id=None):
 
 	form = forms.WorkExperienceForm(instance=work_experience_item)
 	volunteer = request.user.get_profile().try_get_volunteer_profile()
-	print request
+
 	recorded_experiences = models.WorkExperience.objects.filter(volunteer_profile=volunteer)
 
 	if request.POST:
-		pprint (request.POST)
+
 		form = forms.WorkExperienceForm(request.POST)
 		if form.is_valid():
 			new_work_experience = form.save(commit=False)

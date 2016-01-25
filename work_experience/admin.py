@@ -5,4 +5,6 @@ class WorkExperienceAdmin(admin.ModelAdmin):
 	search_fields = ('volunteer__profile__user__first_name','volunteer__profile__user__last_name')
 
 admin.site.register(WorkExperience, WorkExperienceAdmin)
+admin.site.register(Certification,)
+admin.site.register(VolunteerSkill,)
 

@@ -1,6 +1,8 @@
 from training import models, forms
 
 from mailer import models as mailer_models
+from lib import xls
+from reports import forms
 
 from decorators import staff_required
 from django.contrib.auth.decorators import login_required
@@ -207,3 +209,47 @@ def non_attendee_contact(request, event_id):
 		new_recipient.save()
 
 	return redirect(reverse('mailout-detail', kwargs={'mailout_id': new_mailout.pk}))
+
+@staff_required
+def training_report(request):
+	'''Report allowing admins to view who attended which training events in a given date period.'''
+
+	dform = forms.DateRangeForm(request.GET)
+	
+	if dform.is_valid():
+		start = dform.cleaned_data['date_start']
+		end = dform.cleaned_data['date_end']
+		end = end + timedelta(days=1)
+
+	attendees = models.Attendee.objects.filter(date_time__gte=start, date_time__lte=end)
+	events = models.Event.objects.filter(date_time__gte=start, date_time__lte=end)
+
+	if 'attendee-export' in request.REQUEST:
+		export_filename = "training-attendee-export.xls"
+		if request.REQUEST['attendee-export'] == 'xls':
+			return xls.XlsResponse([
+				xls.Column("Event", lambda x: x.event.training.title),
+				xls.Column("First name", lambda x: x.user.first_name),
+				xls.Column("Last name", lambda x: x.user.last_name),
+				xls.Column("Date/Time", lambda x: x.date_time),
+				xls.Column("Present?", lambda x: x.confirmed),
+				], attendees, export_filename)
+
+	elif 'events-export' in request.REQUEST:
+		export_filename = "training-events-export.xls"
+		if request.REQUEST['events-export'] == 'xls':
+			return xls.XlsResponse([
+				xls.Column("Title", lambda x: x.training.title),
+				xls.Column("Date/Time", lambda x: x.date_time),
+				xls.Column("Location", lambda x: x.location),
+				xls.Column("# Attendees", lambda x: len(x.attendee_set.all())),
+				], events, export_filename)
+
+	template = "training/report.html"
+	context = {
+		"attendees": attendees,
+		"events": events,
+	}
+
+	return render(request, template, context)
+
