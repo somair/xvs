@@ -26,7 +26,7 @@ def index(request):
 
 @login_required
 def view(request, event_id):
-	'''Displayes info on one event'''
+	'''Displays info on one event'''
 
 	event = get_object_or_404(models.Event, pk=event_id, date_time__gte=datetime.now())
 	attendee_check = models.Attendee.objects.filter(event=event, user=request.user)
