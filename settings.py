@@ -379,7 +379,7 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-#    'raven.contrib.django.raven_compat',
+    'raven.contrib.django.raven_compat',
 #    'debug_toolbar',
     '%s.pages' % PROJECT_NAME,
     'south',
