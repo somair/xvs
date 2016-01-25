@@ -620,8 +620,6 @@ def my_awards(request):
     my_awards = Award.objects.filter(user=request.user)
     my_award_types = [award.award for award in my_awards]
     all_awards = AwardType.objects.all().order_by('hours_required')
-    print my_awards
-    print all_awards
 
     return render_to_response("profiles/my_awards.html", {
             'hours': hours,
