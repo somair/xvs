@@ -267,7 +267,6 @@ PROJECT_NAME = 'volunteering'
     
 # This imports your instance_settings overrides.
 from instance_settings import *
-from local_settings import *
     
 # If the instance settings didn't supply an explicit database
 # configuration, set up the default configuration using the instance
