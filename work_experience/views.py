@@ -2,13 +2,13 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.contrib import messages
-from decorators import is_volunteer, representative_or_staff
+from decorators import volunteer_required, representative_or_staff
 
 from work_experience import models, forms, logic
 
 from pprint import pprint 
 
-@is_volunteer
+@volunteer_required
 def work_experience(request, we_id=None):
 	'''Allows a volunteer to add, edit, browse and delete his work experience items'''
 
@@ -21,11 +21,9 @@ def work_experience(request, we_id=None):
 
 	form = forms.WorkExperienceForm(instance=work_experience_item)
 	volunteer = request.user.get_profile().try_get_volunteer_profile()
-	print request
 	recorded_experiences = models.WorkExperience.objects.filter(volunteer_profile=volunteer)
 
 	if request.POST:
-		pprint (request.POST)
 		form = forms.WorkExperienceForm(request.POST)
 		if form.is_valid():
 			new_work_experience = form.save(commit=False)
@@ -49,7 +47,7 @@ def work_experience(request, we_id=None):
 	return render(request, template, context)
 
 
-@is_volunteer
+@volunteer_required
 def work_experience_delete(request, we_id=None):
 	'''Deletes a work experience record'''
 
