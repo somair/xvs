@@ -188,7 +188,7 @@ FEATURE_ENDORSEMENT = False
 FEATURE_GA = False
 
 # Awards can be given to students based on amount of hours done.
-FEATURE_AWARD = True
+FEATURE_AWARD = False
 
 # New profile layout (for Tees, but can be used by others...)
 FEATURE_PROFILE_V2 = False
@@ -202,6 +202,9 @@ FEATURE_DISPLAY_STUDENT_ID = False
 # Setting this to true will enable the training module
 FEATURE_TRAINING = False
 FEATURE_TRAINING_EVENT = False
+
+# Setting to true will enable a Work Experience module for users to add WE records.
+FEATURE_WORK_EXPERIENCE = False 
 
 # Some instances wish to allow non-students to register. In this case,
 # the 'R' and 'S' choices can be enabled in the international dropdown.
@@ -264,7 +267,6 @@ PROJECT_NAME = 'volunteering'
     
 # This imports your instance_settings overrides.
 from instance_settings import *
-from local_settings import *
     
 # If the instance settings didn't supply an explicit database
 # configuration, set up the default configuration using the instance
@@ -376,11 +378,10 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-#    'raven.contrib.django.raven_compat',
+    'raven.contrib.django.raven_compat',
 #    'debug_toolbar',
     '%s.pages' % PROJECT_NAME,
     'south',
-    'bootstrap3',
     'djrill',
     'positions',
     'profiles',

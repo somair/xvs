@@ -365,6 +365,27 @@ $(function(){
           </td>
         </tr>
       </table>
+      {% if features.training %}
+      <table class="swish">
+        <tr class="section"><th>Training report</th></tr>
+        <tr>
+          <td>
+            <form method="GET" action="{% url 'training.views.training_report' %}">
+              {% csrf_token %}
+              <div class="label">Start date <span class="tinyhint">Report will start at midnight on this day</span>
+              </div>
+              {{ dform.date_start }}
+              <div class="label">End date <span class="tinyhint">Report will end at 23:59:59 on this day</span>
+              </div>
+              {{ dform.date_end }}
+              <div style="margin-top: 10px;">
+                <input type="submit" value="Generate training report"/>
+              </div>
+            </form>
+          </td>
+        </tr>
+      </table>
+      {% endif %}
       
     
     {% endif %}

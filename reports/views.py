@@ -30,6 +30,16 @@ def sla_check(request, filter):
         # Filter by volunteers who have never been accepted by a representative.
         offers = offers.filter(time_staff_accepted__gte=datetime.datetime.now() - datetime.timedelta(days=31))
 
+    export_filename = "sla-export.xls"
+    if 'export' in request.REQUEST:
+        if request.REQUEST['export'] == 'xls':
+            return xls.XlsResponse([
+                xls.Column("Volunteer", lambda x: x.volunteer.get_full_name() ),
+                xls.Column("Organisation", lambda x: x.position.organisation.name),
+                xls.Column("Offer Received", lambda x: x.time_staff_accepted),
+                xls.Column("Days Awaiting Response", lambda x: x.days_since_time_staff_accepted()),
+                ], offers, export_filename)
+
     return render_to_response("reports/sla.html", {
             'offers': offers,
             'filter': filter,
@@ -109,6 +119,16 @@ def inactive_volunteers(request):
             .filter(volunteer=volunteer)\
             .filter(time_volunteer_accepted__isnull=True)\
             .count()
+
+    export_filename = "inactive-volunteers-export.xls"
+    if 'export' in request.REQUEST:
+        if request.REQUEST['export'] == 'xls':
+            return xls.XlsResponse([
+                xls.Column("Volunteer", lambda x: x.get_full_name() ),
+                xls.Column("Registered", lambda x: x.date_joined),
+                xls.Column("Account Age", lambda x: x.age),
+                xls.Column("# Recommendations", lambda x: x.received_offer_count),
+                ], volunteers, export_filename)
 
     return render_to_response("reports/inactive_volunteers.html", {
             'volunteers': volunteers,

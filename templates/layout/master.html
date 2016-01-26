@@ -55,7 +55,7 @@
           {% else %}
             <p>
               Hello {{ user.first_name }}.
-              {% for link in links %}
+              {% for link in header_links %}
               {{ link.render|safe }} |
               {% endfor %}
               {% if user.is_staff %}

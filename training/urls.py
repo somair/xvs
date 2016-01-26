@@ -21,4 +21,6 @@ urlpatterns = patterns('',
 	url(r'^admin/event/register/(?P<event_id>\d+)/confirm/(?P<attendee_id>\d+)/$', 'training.views.confirm_attendance', name='confirm_attendance'),
 	url(r'^admin/event/register/(?P<event_id>\d+)/remove/(?P<attendee_id>\d+)/$', 'training.views.remove_attendance', name='remove_attendance'),
 
+	url(r'^report/$', 'training.views.training_report', name='training_report'),
+
 )

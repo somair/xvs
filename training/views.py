@@ -1,12 +1,16 @@
 from training import models, forms
 
 from mailer import models as mailer_models
+from lib import xls
+from reports import forms
 
 from decorators import staff_required
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.utils import timezone
+from django.conf import settings
 
 from datetime import datetime, timedelta
 
@@ -24,7 +28,7 @@ def index(request):
 
 @login_required
 def view(request, event_id):
-	'''Displayes info on one event'''
+	'''Displays info on one event'''
 
 	event = get_object_or_404(models.Event, pk=event_id, date_time__gte=datetime.now())
 	attendee_check = models.Attendee.objects.filter(event=event, user=request.user)
@@ -60,7 +64,7 @@ def withdraw(request, event_id):
 		attendee.delete()
 		messages.add_message(request, messages.INFO, 'You have been withdrawn from this event.')
 	else:
-		messages.add_message(request, messages.INFO, 'This event is within the next 24 hours. You cannot withdraw.')
+		messages.add_message(request, messages.INFO, 'This event is within the next 24 hours. You cannot withdraw via the system, please contact a member of Volunteering staff.')
 
 	return redirect(reverse('training_view', kwargs={'event_id': event_id}))
 
@@ -177,6 +181,8 @@ def confirm_attendance(request, event_id, attendee_id):
 	attendee = get_object_or_404(models.Attendee, pk=attendee_id, event__pk=event_id)
 
 	attendee.confirmed = True
+	attendee.user_confirmed = request.user
+	attendee.date_time_confirmed = timezone.now()
 	attendee.save()
 
 	return redirect(reverse('event_register', kwargs={'event_id': event_id}))
@@ -188,6 +194,8 @@ def remove_attendance(request, event_id, attendee_id):
 	attendee = get_object_or_404(models.Attendee, pk=attendee_id, event__pk=event_id)
 
 	attendee.confirmed = False
+	attendee.user_confirmed = None
+	attendee.date_time_confirmed = None
 	attendee.save()
 
 	return redirect(reverse('event_register', kwargs={'event_id': event_id}))
@@ -207,3 +215,47 @@ def non_attendee_contact(request, event_id):
 		new_recipient.save()
 
 	return redirect(reverse('mailout-detail', kwargs={'mailout_id': new_mailout.pk}))
+
+@staff_required
+def training_report(request):
+	'''Report allowing admins to view who attended which training events in a given date period.'''
+
+	dform = forms.DateRangeForm(request.GET)
+	
+	if dform.is_valid():
+		start = dform.cleaned_data['date_start']
+		end = dform.cleaned_data['date_end']
+		end = end + timedelta(days=1)
+
+	attendees = models.Attendee.objects.filter(date_time__gte=start, date_time__lte=end)
+	events = models.Event.objects.filter(date_time__gte=start, date_time__lte=end)
+
+	if 'attendee-export' in request.REQUEST:
+		export_filename = "training-attendee-export.xls"
+		if request.REQUEST['attendee-export'] == 'xls':
+			return xls.XlsResponse([
+				xls.Column("Event", lambda x: x.event.training.title),
+				xls.Column("First name", lambda x: x.user.first_name),
+				xls.Column("Last name", lambda x: x.user.last_name),
+				xls.Column("Date/Time", lambda x: x.date_time),
+				xls.Column("Present?", lambda x: x.confirmed),
+				], attendees, export_filename)
+
+	elif 'events-export' in request.REQUEST:
+		export_filename = "training-events-export.xls"
+		if request.REQUEST['events-export'] == 'xls':
+			return xls.XlsResponse([
+				xls.Column("Title", lambda x: x.training.title),
+				xls.Column("Date/Time", lambda x: x.date_time),
+				xls.Column("Location", lambda x: x.location),
+				xls.Column("# Attendees", lambda x: len(x.attendee_set.all())),
+				], events, export_filename)
+
+	template = "training/report.html"
+	context = {
+		"attendees": attendees,
+		"events": events,
+	}
+
+	return render(request, template, context)
+

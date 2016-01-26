@@ -30,6 +30,7 @@
 {% block content %}
 
   <h2>
+    <a href="?{{ request.META.QUERY_STRING }}&amp;export=xls" class="rbutton icon excel">Export as XLS</a>
     <div class="filter">
       <label>Showing...</label>
       <a href="{% url 'sla-report-all' %}" {% if filter == 'all' %}class='selected'{% endif %}>all offers</a>
