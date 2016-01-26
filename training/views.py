@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.conf import settings
 
 from datetime import datetime, timedelta
 
@@ -62,7 +63,7 @@ def withdraw(request, event_id):
 		attendee.delete()
 		messages.add_message(request, messages.INFO, 'You have been withdrawn from this event.')
 	else:
-		messages.add_message(request, messages.INFO, 'This event is within the next 24 hours. You cannot withdraw.')
+		messages.add_message(request, messages.INFO, 'This event is within the next 24 hours. You cannot withdraw via the system, please contact a member of Volunteering staff.')
 
 	return redirect(reverse('training_view', kwargs={'event_id': event_id}))
 
