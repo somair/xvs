@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.contrib import messages
+from django.utils import timezone
 from django.conf import settings
 
 from datetime import datetime, timedelta
@@ -180,6 +181,8 @@ def confirm_attendance(request, event_id, attendee_id):
 	attendee = get_object_or_404(models.Attendee, pk=attendee_id, event__pk=event_id)
 
 	attendee.confirmed = True
+	attendee.user_confirmed = request.user
+	attendee.date_time_confirmed = timezone.now()
 	attendee.save()
 
 	return redirect(reverse('event_register', kwargs={'event_id': event_id}))
@@ -191,6 +194,8 @@ def remove_attendance(request, event_id, attendee_id):
 	attendee = get_object_or_404(models.Attendee, pk=attendee_id, event__pk=event_id)
 
 	attendee.confirmed = False
+	attendee.user_confirmed = None
+	attendee.date_time_confirmed = None
 	attendee.save()
 
 	return redirect(reverse('event_register', kwargs={'event_id': event_id}))

@@ -22,3 +22,6 @@ class Attendee(models.Model):
 	user = models.ForeignKey(User)
 	date_time = models.DateTimeField(auto_now_add=True)
 	confirmed = models.BooleanField(default=False)
+
+	user_confirmed = models.ForeignKey(User, related_name="user_confirmed", null=True, blank=True)
+	date_time_confirmed = models.DateTimeField(null=True, blank=True)
