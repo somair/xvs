@@ -18,6 +18,8 @@ class VolunteerSkill(models.Model):
 	def __str__(self):
 		return self.name
 
+def make_new_uuid():
+	return str(uuid4())
 
 class WorkExperience(models.Model):
 
@@ -28,8 +30,11 @@ class WorkExperience(models.Model):
 	skills = models.ManyToManyField(VolunteerSkill, null=True, blank=True)
 	certifications = models.ManyToManyField(Certification, null=True, blank=True)
 	reference_email = models.EmailField()
-	confirmation_code = models.CharField(max_length=255, editable=False, default=str(uuid4()))
+	confirmation_code = models.CharField(max_length=255, editable=False, default=make_new_uuid)
 	confirmed = models.BooleanField(default=False)
+
+	def __str__(self):
+		return self.volunteer_profile
 
 
 
