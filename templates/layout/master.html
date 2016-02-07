@@ -55,14 +55,16 @@
           {% else %}
             <p>
               Hello {{ user.first_name }}.
+              {% for link in header_links %}
+              {{ link.render|safe }} |
+              {% endfor %}
               {% if user.is_staff %}
-                <a href="/admin/">Admin</a>,
-                <a href="https://xvs.zendesk.com/home">Staff Support</a>,
+                <a href="/admin/">Admin</a> |
                 {% if features.cms %}
-                  <a href="/site/admin/">CMS</a>,
+                  <a href="/site/admin/">CMS</a> |
                 {% endif %}
               {% endif %}
-              <a href="{% url 'django.contrib.auth.views.logout' %}">Log out</a>.
+              <a href="{% url 'django.contrib.auth.views.logout' %}">Log out</a>
             </p>
           {% endif %}
         </div>

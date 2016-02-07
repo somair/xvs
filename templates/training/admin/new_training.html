@@ -1,0 +1,28 @@
+{% extends 'layout/master.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'training_index' %}">Training</a>
+  <a href="{% url 'training_admin' %}">Admin</a>
+  <a href="{% url 'new_training' %}">New Training Sheme</a>
+{% endblock %}
+
+
+{% block content %}
+{% if not training %}
+<h2>Add New Training Scheme</h2>
+{% else %}
+<h2>Edit Scheme - {{ training.title }}</h2>
+{% endif %}
+<form method="POST">
+{% csrf_token %}
+<table class="data cols">
+{{ form.as_table }}
+<tr><td></td><td><input type="submit" value="Save" /></td></tr>
+</table>
+</form>
+
+{% endblock content %}

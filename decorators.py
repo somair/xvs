@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import REDIRECT_FIELD_NAME
+from django.core.exceptions import ObjectDoesNotExist
 
 def staff_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME):
     """
@@ -33,6 +34,22 @@ def superuser_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME):
 def representative_or_staff(function=None, redirect_field_name=REDIRECT_FIELD_NAME):
     actual_decorator = user_passes_test(
         lambda u: u.get_profile().is_representative or u.is_staff,
+        redirect_field_name=redirect_field_name
+    )
+    if function:
+        return actual_decorator(function)
+    return actual_decorator
+
+def volunteer_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME):
+
+    def get_profile(u):
+        try:
+            return u.get_profile().is_volunteer,
+        except ObjectDoesNotExist:
+            return None
+
+    actual_decorator = user_passes_test(
+        lambda u: get_profile(u),
         redirect_field_name=redirect_field_name
     )
     if function:

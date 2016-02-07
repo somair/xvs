@@ -1,0 +1,55 @@
+{% extends 'layout/master.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'training_index' %}">Training</a>
+  <a href="{% url 'training_admin' %}">Admin</a>
+{% endblock %}
+
+{% block extracss %}
+  <link rel="stylesheet" href="//cdn.datatables.net/1.10.0/css/jquery.dataTables.css" type="text/css"/>
+{% endblock %}
+
+{% block extrajavascript %}
+  <script type="text/javascript" src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
+   <script type="text/javascript" charset="utf-8">
+    $(function(){
+      var volunteer_table = $('#register').DataTable({
+          "stateSave": true,
+          "pageLength": 10
+        });
+    })
+   </script>
+{% endblock %}
+
+{% block content %}
+<h2>Event Register</h2>
+<p>{{ event.training.title }}, {{ event.date_time }}</p>
+<p><a href="{% url 'non_attendee_contact' event.pk %}">Contact Non Attending Users</a></p>
+<table id="register" class="display">
+  <thead>
+      <tr>
+        <th>First name</th>
+        <th>Last name</th>
+        <th>Email</th>
+        <th>Present?</th>
+        <th></th>
+      </tr>
+    </thead>
+  <tbody>
+  {% for attendee in event.attendee_set.all %}
+    <tr>
+      <td>{{ attendee.user.first_name }}</td>
+      <td>{{ attendee.user.last_name }}</td>
+      <td>{{ attendee.user.email }}</td>
+      <td>{% if attendee.confirmed %}Present{% else %}Not confirmed{% endif %}</td>
+      <td>{% if not attendee.confirmed %}<a href="{% url 'confirm_attendance' event.pk attendee.pk %}">Mark Present</a>{% else %}<a href="{% url 'remove_attendance' event.pk attendee.pk %}">Mark Not Present</a>{% endif %}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% endblock content %}

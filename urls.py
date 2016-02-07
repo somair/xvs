@@ -126,6 +126,7 @@ if settings.FEATURE_ENDORSEMENT:
 if settings.FEATURE_AWARD:
     urlpatterns +=  patterns('',
         (r'^reports/awards$', 'reports.views.awards'),
+        url(r'^profiles/myawards/$', 'profiles.views.my_awards', name='my_awards'),
     )
 
 if settings.FEATURE_LOGIN_AS:
@@ -133,7 +134,18 @@ if settings.FEATURE_LOGIN_AS:
         url(r'^profiles/loginas/(?P<user_id>\d+)/$', 'profiles.views.login_as_user', name='login_as_user' ),
     )
 
+if settings.FEATURE_TRAINING:
+    urlpatterns += patterns('',
+        url(r'^training/', include('training.urls')),
+    )
+
+if settings.FEATURE_WORK_EXPERIENCE:
+    urlpatterns += patterns('',
+        url(r'^work_experience/', include('work_experience.urls')),
+    )
+
 if settings.DEBUG:
     urlpatterns += patterns('',
         (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}),
+        (r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}),
         )

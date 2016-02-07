@@ -1,0 +1,73 @@
+{% extends 'layout/master.html' %}
+
+{% load url from future %}
+
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'work_experience' %}">Work Experience</a>
+{% endblock %}
+
+
+{% block extracss %}
+  <link rel="stylesheet" href="//cdn.datatables.net/1.10.0/css/jquery.dataTables.css" type="text/css"/>
+  <link rel="stylesheet" type="text/css" href="/media/css/work-experience.css">
+{% endblock %}
+
+{% block extrajavascript %}
+  <script type="text/javascript" src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
+   <script type="text/javascript" charset="utf-8">
+    $(function(){
+      var volunteer_table = $('#table').DataTable();
+    })
+   </script>
+{% endblock %}
+
+
+{% block content %}
+
+<h2>Work Experience Report</h2>
+<table id="table">
+  <thead>
+    <tr>
+      <th>Volunteer</th>
+      <th>Role</th>
+      <th>Description</th>
+      <th>Certifications</th>
+      <th>Skills</th>
+      <th>Referrer</th>
+      <th>Confirmed</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for we in work_experience_items %}
+    <tr>
+      <td>{{ we.volunteer_profile.profile.user.first_name }} {{ we.volunteer_profile.profile.user.last_name }}</td>
+      <td>{{ we.role }}</td>
+      <td>{{ we.description }}</td>
+      <td>
+          <ul>
+          {% if we.certifications.all %}
+            {% for certification in we.certifications.all %}
+              <li>{{ certification. }}</li>
+            {% endfor %}
+          {% else %}
+          ------------
+          {% endif %}
+          </ul>
+      </td>
+      <td>
+          <ul>
+            {% for skill in we.skills.all %}
+              <li>{{ skill }}</li>
+            {% endfor %}
+          </ul>
+      </td>
+      <td>{{ we.reference_email }}</td>
+      <td> {% if we.confirmed %}Yes{% else %}No{% endif %}</td>
+    </tr>      
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock content %}

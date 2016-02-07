@@ -105,6 +105,14 @@ $(function(){
                 <a class="icon cv" href="{% url 'hours.views.volunteer_hours' user.id %}">Record my hours</a>
               </td>
             </tr>
+            {% if features.award %}
+            <tr>
+              <td class="button">
+                <a class="icon opp_list" href="{% url 'my_awards' %}">
+                My awards</a>
+              </td>
+            </tr>
+            {% endif %}
             <tr>
               <td class="button">
                 <a class="icon applications" href="{% url 'profiles.views.offers' user.id %}">View my applications</a>
@@ -119,6 +127,20 @@ $(function(){
               <tr>
                 <td class="button">
                   <a class="icon person" href="{% url 'blogs.views.blogadmin' %}">Manage my blog</a>
+                </td>
+              </tr>
+            {% endif %}
+            {% if features.training %}
+            <tr>
+                <td class="button">
+                  <a class="icon group" href="{% url 'training_index' %}">Training</a>
+                </td>
+              </tr>
+            {% endif %}
+            {% if features.work_experience and request.user.get_profile.try_get_volunteer_profile %}
+            <tr>
+                <td class="button">
+                  <a class="icon database_edit" href="{% url 'work_experience' %}">Work experience</a>
                 </td>
               </tr>
             {% endif %}
@@ -250,6 +272,13 @@ $(function(){
             </td>
           </tr>
         {% endif %}
+        {% if features.training %}
+        <tr>
+            <td class="button">
+              <a class="icon group" href="{% url 'training_admin' %}">Training Admin</a>
+            </td>
+          </tr>
+        {% endif %}
 
       </table>
 
@@ -283,6 +312,14 @@ $(function(){
           <td class="button">
             <a class="icon report" href="{% url 'reports.views.awards' %}">
               Awards Report</a>
+          </td>
+        </tr>
+        {% endif %}
+        {% if features.work_experience %}
+        <tr>
+          <td class="button">
+            <a class="icon report" href="{% url 'work_experience_report' %}">
+              Work Experience Report</a>
           </td>
         </tr>
         {% endif %}
@@ -328,6 +365,27 @@ $(function(){
           </td>
         </tr>
       </table>
+      {% if features.training %}
+      <table class="swish">
+        <tr class="section"><th>Training report</th></tr>
+        <tr>
+          <td>
+            <form method="GET" action="{% url 'training.views.training_report' %}">
+              {% csrf_token %}
+              <div class="label">Start date <span class="tinyhint">Report will start at midnight on this day</span>
+              </div>
+              {{ dform.date_start }}
+              <div class="label">End date <span class="tinyhint">Report will end at 23:59:59 on this day</span>
+              </div>
+              {{ dform.date_end }}
+              <div style="margin-top: 10px;">
+                <input type="submit" value="Generate training report"/>
+              </div>
+            </form>
+          </td>
+        </tr>
+      </table>
+      {% endif %}
       
     
     {% endif %}

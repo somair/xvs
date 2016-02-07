@@ -1,0 +1,34 @@
+{% extends 'profiles/profile.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="">My Awards</a>
+{% endblock %}
+
+{% block content %}
+
+  <h2>Volunteer: {{ request.user.get_full_name }}</h2>
+  <p>A list of the awards available, those you've completed, and the requirements to complete the others. You've completed <strong>{{ hours }}</strong> hours of volunteering.</p>
+  <ul>
+  {% for award in all_awards %}
+  	<li>
+	  	{{ award.name }} 
+	  	{% if award in my_award_types %}
+	  		- <strong>Completed</strong>
+	  	{% else %}
+	  		<ul>
+	  			<li><strong>Requirements:</strong></li>
+	  			<li>{{ award.hours_required }} hours</li>
+	  			{% for training in award.training_required.all %}
+	  			<li>{{ training.title }}</li>
+	  			{% endfor %}
+	  		</ul>
+	  	{% endif %}
+  	</li>
+  {% endfor %}
+  </ul>
+
+{% endblock %}

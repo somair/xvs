@@ -199,6 +199,13 @@ FEATURE_LOGIN_AS = False
 # Option adds the student ID to volunteer report and export
 FEATURE_DISPLAY_STUDENT_ID = False
 
+# Setting this to true will enable the training module
+FEATURE_TRAINING = False
+FEATURE_TRAINING_EVENT = False
+
+# Setting to true will enable a Work Experience module for users to add WE records.
+FEATURE_WORK_EXPERIENCE = False 
+
 # Some instances wish to allow non-students to register. In this case,
 # the 'R' and 'S' choices can be enabled in the international dropdown.
 # If you enable 'R' and 'S' you *must* enable the "None" grad choice.
@@ -316,7 +323,7 @@ MEDIA_ROOT = '%s/%s/media' % (PATH_PREFIX, PROJECT_NAME,)
 
 BASE_URL = '/'
 
-STATIC_URL = MEDIA_URL + "new/"
+STATIC_URL = "/static/"
 
 STATIC_ROOT = "%s/%s/staticroot/" % (PATH_PREFIX, PROJECT_NAME,)
 
@@ -348,6 +355,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.media",
     "django.contrib.messages.context_processors.messages",
     "%s.processors.tandem_context" % PROJECT_NAME,
+    "%s.processors.links" % PROJECT_NAME,
+
 )
 
 ROOT_URLCONF = '%s.urls' % PROJECT_NAME
@@ -385,6 +394,8 @@ INSTALLED_APPS = (
     'blogs',
     'mailer',
     'notes',
+    'training',
+    'work_experience',
 )
 
 ACCOUNT_ACTIVATION_DAYS = 21

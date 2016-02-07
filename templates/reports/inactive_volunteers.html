@@ -10,7 +10,7 @@
 
 {% block content %}
 
-  <h2>Inactive Volunteers Report</h2>
+  <h2><a href="?{{ request.META.QUERY_STRING }}&amp;export=xls" class="rbutton icon excel">Export as XLS</a>Inactive Volunteers Report</h2>
 
   <p>This report shows all volunteers who have registered but neither expressed an interest in a position, nor agreed to a position recommended by staff.</p>
 

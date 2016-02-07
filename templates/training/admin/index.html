@@ -1,0 +1,113 @@
+{% extends 'layout/master.html' %}
+
+{% load url from future %}
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'training_index' %}">Training</a>
+  <a href="{% url 'training_admin' %}">Admin</a>
+{% endblock %}
+
+{% block extracss %}
+  <link rel="stylesheet" href="//cdn.datatables.net/1.10.0/css/jquery.dataTables.css" type="text/css"/>
+{% endblock %}
+
+{% block extrajavascript %}
+  <script type="text/javascript" src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
+   <script type="text/javascript" charset="utf-8">
+    $(function(){
+      var volunteer_table = $('#training_schemes').DataTable({
+          "stateSave": true,
+          "pageLength": 10
+        });
+    })
+
+    $(function(){
+      var volunteer_table = $('#future_events').DataTable({
+          "stateSave": true,
+          "pageLength": 10
+        });
+    })
+
+    $(function(){
+      var volunteer_table = $('#past_events').DataTable({
+          "stateSave": true,
+          "pageLength": 10,
+        });
+    })
+   </script>
+{% endblock %}
+
+{% block content %}
+<h2>Training Schemes - <a href="{% url 'new_training' %}">Add New</a></h2>
+<table id="training_schemes" class="display">
+  <thead>
+      <tr>
+        <th>Title</th>
+        <th>Description</th>
+        <th></th>
+      </tr>
+    </thead>
+  <tbody>
+  {% for scheme in training %}
+    <tr>
+      <td>{{ scheme.title }}</td>
+      <td>{{ scheme.description|truncatechars:200 }}</td>
+      <td><a href="{% url 'edit_training' scheme.pk %}">Edit</a></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+
+<h2>Future Events - <a href="{% url 'new_event' %}">Add New</a></h2>
+<table id="future_events" class="display">
+  <thead>
+      <tr>
+        <th>Training Scheme Title</th>
+        <th>Date &amp; time</th>
+        <th>Location</th>
+        <th></th>
+        <th></th>
+        <th></th>
+      </tr>
+    </thead>
+  <tbody>
+  {% for event in future_events %}
+    <tr>
+      <td>{{ event.training.title }}</td>
+      <td>{{ event.date_time }}</td>
+      <td>{{ event.location }}</td>
+      <td><a href="{% url 'event_register' event.pk %}">View Register</a></td>
+      <td><a href="{% url 'edit_event' event.pk %}">Edit</a></td>
+      <td><a href="{% url 'delete_event' event.pk %}">Delete</a></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+
+<h2>Past Events</h2>
+<table id="past_events" class="display">
+  <thead>
+      <tr>
+        <th>Training Scheme Title</th>
+        <th>Date &amp; time</th>
+        <th>Location</th>
+        <th></th>
+      </tr>
+    </thead>
+  <tbody>
+  {% for event in past_events %}
+    <tr>
+      <td>{{ event.training.title }}</td>
+      <td>{{ event.date_time }}</td>
+      <td>{{ event.location }}</td>
+      <td><a href="{% url 'event_register' event.pk %}">View Register</a></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% endblock content %}

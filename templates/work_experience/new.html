@@ -1,0 +1,83 @@
+{% extends 'layout/master.html' %}
+
+{% load url from future %}
+
+
+
+{% block nav %}
+  {{ block.super }}
+  <a href="{% url 'work_experience' %}">Work Experience</a>
+{% endblock %}
+
+
+{% block extracss %}
+  <link rel="stylesheet" href="//cdn.datatables.net/1.10.0/css/jquery.dataTables.css" type="text/css"/>
+  <link rel="stylesheet" type="text/css" href="/media/css/work-experience.css">
+
+  <link type='text/css' href="/media/css/jquery.tagit.css" rel="stylesheet">
+{% endblock %}
+
+{% block extrajavascript %}
+  <script type="text/javascript" src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
+   <script type="text/javascript" charset="utf-8">
+    $(function(){
+      var volunteer_table = $('#table').DataTable();
+    })
+   </script>
+   <script src="/media/js/tag-it.min.js"></script>
+   <script type="text/javascript">
+      $(document).ready(function() {
+          $("#tags").tagit();
+      });
+   </script>
+{% endblock %}
+
+
+{% block content %}
+	
+
+  <div id="experience-form">
+    <h2>New Work Experience</h2>
+    <p>Fill the following to form to add a new entry to your work experience</p>
+    <form method="POST">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <div id="skils">
+        <label>Skills:</label>
+        <ul id="tags"></ul>
+        <span class="helptext">you can separate your skills with the space bar</span>
+      </div>
+      <p id="buttons">
+        <button type="submit">Save</button>
+      </p>
+    </form>
+  </div>
+
+  {% if recorded_experiences%}
+    <div id="experience-record">
+      <h2>Recorded experiences</h2>
+    	<table id="table" class="">
+    	 <thead>
+          <tr>
+            <th>Role</th>
+            <th>Description</th>
+            <th>Hours</th>
+            <th>Referrer</th>
+            <th>delete</th>
+          </tr>
+        </thead>
+    	<tbody>
+      {% for we in recorded_experiences%}
+    		<tr>
+          <td>{{ we.role }}</td>
+          <td>{{ we.description|truncatechars:25 }}</td>
+          <td>{{ we.hours }}</td>
+          <td>{{ we.reference_email }}</td>
+          <td><a class="icon table_delete" href="{% url 'work_experience_delete' we.pk %}"></a></td>
+    		</tr>
+        {% endfor %}
+    	</tbody>
+    	</table>
+    </div>
+  {% endif %}
+{% endblock content %}
