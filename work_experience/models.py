@@ -34,7 +34,7 @@ class WorkExperience(models.Model):
 	confirmed = models.BooleanField(default=False)
 
 	def __str__(self):
-		return self.volunteer_profile
+		return "%s %s" % (self.volunteer_profile.profile.user.username, self.role) 
 
 
 

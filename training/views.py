@@ -2,7 +2,7 @@ from training import models, forms
 
 from mailer import models as mailer_models
 from lib import xls
-from reports import forms
+from reports import forms as report_forms
 
 from decorators import staff_required
 from django.contrib.auth.decorators import login_required
@@ -220,7 +220,7 @@ def non_attendee_contact(request, event_id):
 def training_report(request):
 	'''Report allowing admins to view who attended which training events in a given date period.'''
 
-	dform = forms.DateRangeForm(request.GET)
+	dform = report_forms.DateRangeForm(request.GET)
 	
 	if dform.is_valid():
 		start = dform.cleaned_data['date_start']
