@@ -3,7 +3,7 @@
 <div style="padding-top: 8px;">
   <a href="/">Stripe XVS<sup style="position:relative;top:-3px;z-index:-10;">OS</sup></a> DEV by <a href="http://www.stripesolutions.com">Stripe Software Solutions LLP</a> (c) <a href="http://www.stripesolutions.com">S<sup style="position:relative;top:-3px;z-index:-10;">3</sup>LLP</a>/<a href="http://x13n.com">x13N</a> 2011-2015. For help email <a href="mailto:{{ SUPPORT_EMAIL }}">{{ SUPPORT_EMAIL }}</a>
   <br />
-  {% for link in header_links %}
+  {% for link in footer_links %}
   {{ link.render|safe }} {% if not forloop.last %}|<br />{% endif %}
   {% endfor %}
 </div>
