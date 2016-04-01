@@ -39,7 +39,7 @@ FRIENDLY_NAME = "XVS OS"
 # instance, 'ed.ac.uk' would allow 's0458553@sms.ed.ac.uk'.
 #
 # If the list is empty, everybody is allowed to register.
-ONLY_ALLOW_EMAIL_ADDRESSES_ENDING_WITH = None
+ONLY_ALLOW_EMAIL_ADDRESSES_ENDING_WITH = []
 
 # Sometimes end users should always be referred to the admin staff, never
 # XVS support. In that case, this email address is shown.
