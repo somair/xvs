@@ -277,7 +277,7 @@ def position(request, position_id):
 
     if request.method == "POST":
         # Only a representative of the organisation is allowed to modify the position.
-        if not request.user.get_profile().representativeprofile.organisation == position.organisation and not request.user.is_staff:
+        if not request.user.is_staff and not request.user.get_profile().representativeprofile.organisation == position.organisation:
             raise Exception("Cannot edit: not the owning organisation of this position.")
 
         if "copy" in request.POST:
